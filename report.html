@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil-Reset – Deine Analyse</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&family=Raleway:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple: #7B5EA7;
+  --purple-light: #9B7EC8;
+  --purple-dark: #5A4080;
+  --lavender: #F5EBF8;
+  --lavender-mid: #EDE0F5;
+  --lavender-dark: #D4C0E8;
+  --text: #2D1B4E;
+  --text-light: rgba(45,27,78,0.6);
+  --white: #FFFFFF;
+  --green: #27AE60;
+  --red: #E74C3C;
+  --orange: #E67E22;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--lavender);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(123,94,167,0.12) 0%, transparent 50%),
+    radial-gradient(circle at 85% 85%, rgba(212,192,232,0.25) 0%, transparent 50%);
+}
+#loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+.spinner {
+  width: 48px; height: 48px;
+  border: 3px solid var(--lavender-dark);
+  border-top-color: var(--purple);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+#report { display: none; }
+.report-container { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* Header */
+.report-header { text-align: center; margin-bottom: 48px; animation: fadeUp .6s ease both; }
+.report-logo { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--purple); margin-bottom: 20px; }
+.report-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px,5vw,46px); color: var(--text); line-height: 1.2; margin-bottom: 12px; }
+.report-meta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; font-size: 13px; color: var(--text-light); margin-top: 16px; }
+.report-meta span { background: var(--white); border-radius: 20px; padding: 5px 14px; border: 1px solid var(--lavender-dark); }
+
+/* Cards */
+.card { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 20px; border: 1px solid var(--lavender-dark); box-shadow: 0 4px 24px rgba(123,94,167,0.08); padding: 28px; margin-bottom: 24px; animation: fadeUp .5s ease both; }
+.section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+.section-nr { width: 36px; height: 36px; background: var(--purple); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.section-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); flex: 1; }
+.score-badge { border-radius: 20px; padding: 4px 14px; font-size: 13px; font-weight: 700; }
+.score-badge.high { background: rgba(39,174,96,0.12); color: #1a7a42; }
+.score-badge.mid { background: rgba(230,126,34,0.12); color: #9a5010; }
+.score-badge.low { background: rgba(231,76,60,0.12); color: #a0392d; }
+
+/* Einstieg */
+.einstieg-section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--purple); text-align: center; margin-bottom: 14px; }
+.einstieg-split {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 28px;
+  animation: fadeUp .5s ease .1s both;
+  box-shadow: 0 8px 40px rgba(123,94,167,0.15);
+}
+@media (max-width: 640px) { .einstieg-split { grid-template-columns: 1fr; } .einstieg-img-col { display: none; } }
+.einstieg-img-col { position: relative; min-height: 360px; }
+.einstieg-img-col img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.einstieg-content-col {
+  background: linear-gradient(145deg, #6B4D96 0%, var(--purple-dark) 100%);
+  padding: 44px 40px 40px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.einstieg-greeting { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: white; margin-bottom: 22px; }
+.einstieg-body { font-size: 15px; line-height: 1.85; color: rgba(255,255,255,0.92); font-weight: 300; }
+.einstieg-body p { margin-bottom: 16px; }
+.einstieg-body p:last-child { margin-bottom: 0; }
+.einstieg-sign { font-family: 'Playfair Display', serif; font-size: 18px; color: rgba(255,255,255,0.9); margin-top: 28px; }
+
+/* Orientierungswörter */
+.worte-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.wort-chip { background: var(--lavender-mid); color: var(--purple-dark); border-radius: 30px; padding: 7px 16px; font-size: 14px; font-weight: 600; border: 1px solid var(--lavender-dark); }
+
+/* Score Dashboard */
+.score-dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 12px; margin-bottom: 32px; }
+.score-card { background: var(--white); border-radius: 14px; padding: 14px; text-align: center; border: 1px solid var(--lavender-dark); }
+.score-card-nr { font-size: 11px; color: var(--text-light); font-weight: 600; margin-bottom: 4px; }
+.score-card-title { font-size: 11px; color: var(--text); font-weight: 600; margin-bottom: 10px; line-height: 1.3; min-height: 28px; display: flex; align-items: center; justify-content: center; }
+.score-circle { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; margin: 0 auto; }
+.score-high { background: rgba(39,174,96,0.12); color: #1a7a42; }
+.score-mid { background: rgba(230,126,34,0.12); color: #9a5010; }
+.score-low { background: rgba(231,76,60,0.12); color: #a0392d; }
+
+/* Section 1 */
+.verdict-badge { display: inline-block; font-size: 20px; font-weight: 800; letter-spacing: .1em; padding: 10px 28px; border-radius: 40px; margin-bottom: 20px; }
+.verdict-bleiben { background: rgba(39,174,96,0.12); color: #1a7a42; }
+.verdict-gehen { background: rgba(231,76,60,0.12); color: #a0392d; }
+.gruende-list { list-style: none; }
+.gruende-list li { padding: 10px 0; border-bottom: 1px solid var(--lavender-mid); display: flex; gap: 10px; font-size: 15px; line-height: 1.5; }
+.gruende-list li:last-child { border-bottom: none; }
+.check-icon { font-weight: 700; flex-shrink: 0; }
+.gedanke-box { background: var(--lavender-mid); border-radius: 12px; padding: 16px 20px; font-style: italic; font-family: 'Playfair Display', serif; font-size: 16px; border-left: 4px solid var(--purple); margin-top: 16px; }
+.schwachpunkt-box { background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.2); border-radius: 12px; padding: 14px 18px; font-size: 14px; color: #7a3030; margin-top: 12px; }
+.schwachpunkt-label { font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #a0392d; margin-bottom: 4px; }
+
+/* Section 2 */
+.filter-satz { font-family: 'Playfair Display', serif; font-size: 19px; line-height: 1.65; color: var(--text); background: var(--lavender-mid); border-radius: 14px; padding: 20px 24px; border-left: 4px solid var(--purple); margin-bottom: 20px; font-style: italic; }
+.anwendung-list { list-style: none; }
+.anwendung-list li { padding: 10px 0; border-bottom: 1px solid var(--lavender-mid); display: flex; gap: 10px; font-size: 14px; line-height: 1.5; }
+.anwendung-list li:last-child { border-bottom: none; }
+.anwendung-list li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+/* Section 3 */
+.name-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0 16px; }
+.name-box { border-radius: 12px; padding: 16px; border: 1px solid var(--lavender-dark); }
+.name-box-current { background: rgba(231,76,60,0.04); border-color: rgba(231,76,60,0.2); }
+.name-box-new { background: rgba(39,174,96,0.06); border-color: rgba(39,174,96,0.25); }
+.name-box-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-light); margin-bottom: 8px; }
+.name-box-value { font-size: 17px; font-weight: 700; }
+.name-box-current .name-box-value { color: var(--text-light); }
+.name-box-new .name-box-value { color: #1a7a42; }
+.alt-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.alt-chip { background: var(--lavender-mid); border: 1px solid var(--lavender-dark); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600; color: var(--purple-dark); }
+
+/* Section 4 – Bios */
+.bio-cards { display: flex; flex-direction: column; gap: 16px; }
+.bio-card { background: var(--white); border-radius: 16px; border: 1px solid var(--lavender-dark); padding: 20px; position: relative; overflow: hidden; }
+.bio-card.empfohlen { border-color: var(--purple); box-shadow: 0 0 0 2px rgba(123,94,167,0.2); }
+.bio-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--lavender-dark); border-radius: 4px 0 0 4px; }
+.bio-card.empfohlen::before { background: var(--purple); }
+.bio-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; flex-wrap: wrap; }
+.bio-stil-badge { background: var(--lavender-mid); color: var(--purple-dark); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; border: 1px solid var(--lavender-dark); }
+.empfohlen-star { background: rgba(123,94,167,0.1); color: var(--purple); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 700; }
+.bio-text { font-size: 15px; line-height: 1.9; white-space: pre-line; background: var(--lavender); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid var(--lavender-mid); }
+.char-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-light); margin-bottom: 6px; }
+.char-ok { color: var(--green); font-weight: 700; }
+.char-warn { color: var(--orange); font-weight: 700; }
+.char-bar { height: 4px; background: var(--lavender-mid); border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+.char-fill { height: 100%; border-radius: 10px; }
+.bio-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.bio-copy-btn { background: none; border: 1.5px solid var(--lavender-dark); color: var(--purple); border-radius: 8px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+.bio-copy-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+.begruendung-toggle { font-size: 13px; color: var(--purple); font-weight: 600; cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0; }
+.begruendung-text { display: none; margin-top: 10px; font-size: 13px; color: var(--text-light); line-height: 1.6; background: rgba(123,94,167,0.04); border-radius: 9px; padding: 12px 14px; border-left: 3px solid rgba(123,94,167,0.25); }
+.begruendung-text.open { display: block; }
+
+/* Section 6 – Highlights */
+.highlights-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 14px; }
+.highlight-card { background: var(--white); border-radius: 14px; border: 1px solid var(--lavender-dark); padding: 18px; }
+.highlight-title { font-weight: 700; font-size: 15px; color: var(--purple-dark); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--lavender-mid); }
+.highlight-punkte { list-style: none; }
+.highlight-punkte li { font-size: 13px; padding: 5px 0; display: flex; gap: 8px; line-height: 1.4; }
+.highlight-punkte li::before { content: '›'; color: var(--purple); font-weight: 700; flex-shrink: 0; }
+
+/* Section 7 – Pin-Posts */
+.pinposts-list { display: flex; flex-direction: column; gap: 16px; }
+.pinpost-card { background: var(--white); border-radius: 16px; border: 1px solid var(--lavender-dark); padding: 20px 20px 20px 56px; position: relative; }
+.pinpost-nr { position: absolute; left: 16px; top: 20px; width: 28px; height: 28px; background: var(--purple); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+.pinpost-tags { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.pinpost-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border-radius: 20px; padding: 3px 10px; border: 1px solid; }
+.tag-trust { color: #1a5a7a; background: rgba(26,90,122,0.08); border-color: rgba(26,90,122,0.2); }
+.tag-community { color: #5a2a7a; background: rgba(90,42,122,0.08); border-color: rgba(90,42,122,0.2); }
+.tag-sales { color: #1a7a42; background: rgba(26,122,66,0.08); border-color: rgba(26,122,66,0.2); }
+.tag-format { color: var(--text-light); background: var(--lavender); border-color: var(--lavender-dark); }
+.pinpost-hook { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--text); font-weight: 700; margin-bottom: 14px; line-height: 1.4; }
+.pinpost-row { margin-bottom: 8px; }
+.pinpost-row:last-child { margin-bottom: 0; }
+.pinpost-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-light); margin-bottom: 3px; }
+.pinpost-value { font-size: 14px; line-height: 1.5; }
+
+/* Section 8 – Story */
+.leitlinien-list { list-style: none; margin-top: 12px; }
+.leitlinien-list li { padding: 10px 0; border-bottom: 1px solid var(--lavender-mid); display: flex; gap: 10px; font-size: 14px; line-height: 1.5; }
+.leitlinien-list li:last-child { border-bottom: none; }
+.leitlinien-list li::before { content: '→'; color: var(--purple); font-weight: 700; flex-shrink: 0; }
+
+/* Section 9 – Content-Säulen */
+.saeulen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 14px; }
+.saeule-card { background: var(--white); border-radius: 14px; border: 1px solid var(--lavender-dark); border-top: 4px solid var(--purple); padding: 20px; }
+.saeule-title { font-weight: 700; font-size: 16px; color: var(--purple-dark); margin-bottom: 8px; }
+.saeule-beschreibung { font-size: 13px; color: var(--text-light); line-height: 1.5; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--lavender-mid); }
+.saeule-ideen { list-style: none; }
+.saeule-ideen li { font-size: 13px; padding: 5px 0; display: flex; gap: 8px; line-height: 1.4; }
+.saeule-ideen li::before { content: '✦'; color: var(--purple); font-size: 10px; flex-shrink: 0; margin-top: 3px; }
+
+/* Section 10 – Hook-Bibliothek */
+.hooklib-categories { display: flex; flex-direction: column; gap: 28px; }
+.hooklib-cat-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.hooklib-cat-badge { border-radius: 20px; padding: 4px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.cat-community { background: rgba(123,94,167,0.12); color: var(--purple-dark); }
+.cat-trust { background: rgba(26,90,122,0.1); color: #1a5a7a; }
+.cat-sales { background: rgba(39,174,96,0.1); color: #1a7a42; }
+.cat-viral { background: rgba(230,126,34,0.1); color: #9a5010; }
+.cat-provokation { background: rgba(231,76,60,0.1); color: #a0392d; }
+.hooklib-cat-ziel { font-size: 12px; color: var(--text-light); }
+.hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.hook-item { background: var(--white); border-radius: 10px; border: 1px solid var(--lavender-dark); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.hook-text { font-size: 14px; font-weight: 600; line-height: 1.4; flex: 1; }
+.hook-copy { background: none; border: 1px solid var(--lavender-dark); color: var(--purple); border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 600; cursor: pointer; flex-shrink: 0; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+.hook-copy:hover { background: var(--purple); color: white; border-color: var(--purple); }
+
+/* Section 11 – Todos */
+.todos-list { list-style: none; }
+.todo-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--lavender-mid); }
+.todo-item:last-child { border-bottom: none; }
+.todo-nr { width: 28px; height: 28px; background: var(--purple); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.todo-text { font-size: 15px; line-height: 1.5; padding-top: 3px; }
+
+/* Farbpalette */
+.farben-palette { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 4px; }
+.swatch { text-align: center; }
+.swatch-color { width: 72px; height: 72px; border-radius: 14px; border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 8px; }
+.swatch-hex { font-size: 12px; font-weight: 700; color: var(--text); font-family: monospace; margin-bottom: 3px; }
+.swatch-label { font-size: 11px; color: var(--text-light); }
+.farben-font { display: flex; align-items: center; gap: 12px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--lavender-mid); }
+.farben-font-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-light); }
+.farben-font-name { font-size: 20px; font-weight: 600; color: var(--text); }
+
+/* Karussell */
+.karussell-section { margin-bottom: 24px; }
+.karussell-section-header { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text); margin-bottom: 20px; }
+.karussell-posts { display: flex; flex-direction: column; gap: 28px; }
+.karussell-post { background: rgba(255,255,255,0.85); border-radius: 20px; border: 1px solid var(--lavender-dark); box-shadow: 0 4px 24px rgba(123,94,167,0.08); padding: 24px; }
+.karussell-post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; gap: 12px; flex-wrap: wrap; }
+.karussell-post-titel { font-weight: 700; font-size: 16px; color: var(--text); }
+.karussell-dl-btn { background: var(--lavender-mid); border: 1.5px solid var(--lavender-dark); color: var(--purple-dark); border-radius: 10px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; white-space: nowrap; }
+.karussell-dl-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+.karussell-dl-btn:disabled { opacity: .6; cursor: default; }
+.karussell-viewer { display: flex; align-items: center; gap: 12px; }
+.slide-nav-btn { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--lavender-dark); background: var(--white); color: var(--purple); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s; line-height: 1; font-family: 'DM Sans', sans-serif; }
+.slide-nav-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+.slide-container { flex: 1; position: relative; border-radius: 14px; overflow: hidden; aspect-ratio: 4/5; max-width: 340px; margin: 0 auto; }
+.slide { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center; align-items: flex-start; padding: 32px 28px; box-sizing: border-box; }
+.slide.active { display: flex; }
+.slide-nr-badge { position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 700; opacity: .5; }
+.slide-edit-hint { position: absolute; top: 16px; left: 16px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; opacity: .6; background: rgba(255,255,255,0.15); border-radius: 6px; padding: 3px 8px; }
+.slide-content { width: 100%; }
+.slide-text-gross { font-size: clamp(22px,4vw,32px); font-weight: 700; line-height: 1.25; margin-bottom: 16px; outline: none; min-height: 40px; cursor: text; }
+.slide-text-gross:focus { opacity: .9; }
+.slide-text-klein { font-size: clamp(14px,2vw,18px); font-weight: 400; line-height: 1.55; opacity: .8; outline: none; min-height: 20px; cursor: text; }
+.slide-dots { display: flex; justify-content: center; gap: 7px; margin-top: 14px; }
+.slide-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lavender-dark); cursor: pointer; transition: all .15s; }
+.slide-dot.active { background: var(--purple); width: 22px; border-radius: 4px; }
+
+/* PDF section */
+.pdf-section { background: var(--white); border: 1px solid var(--lavender-dark); border-radius: 20px; padding: 24px 28px; margin-top: 32px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.pdf-section-icon { font-size: 32px; flex-shrink: 0; }
+.pdf-section-text { flex: 1; min-width: 200px; }
+.pdf-section-title { font-weight: 700; font-size: 16px; color: var(--text); margin-bottom: 5px; }
+.pdf-section-sub { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+.pdf-section-btn { background: var(--lavender-mid); border: 1.5px solid var(--lavender-dark); color: var(--purple-dark); border-radius: 12px; padding: 12px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; flex-shrink: 0; white-space: nowrap; }
+.pdf-section-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+
+/* Pitch */
+.pitch-section { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); border-radius: 24px; padding: 44px 36px; text-align: center; margin-top: 20px; color: white; }
+.pitch-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .65; margin-bottom: 16px; }
+.pitch-section h3 { font-family: 'Playfair Display', serif; font-size: 26px; margin-bottom: 16px; line-height: 1.3; }
+.pitch-section p { font-size: 15px; opacity: .87; line-height: 1.75; margin-bottom: 28px; max-width: 520px; margin-left: auto; margin-right: auto; }
+.pitch-section p em { font-style: italic; opacity: 1; font-family: 'Playfair Display', serif; font-size: 16px; }
+.pitch-btn { display: inline-block; background: white; color: var(--purple-dark); border-radius: 14px; padding: 14px 28px; font-weight: 700; font-size: 15px; text-decoration: none; transition: transform .15s, box-shadow .15s; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.pitch-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.22); }
+
+/* Text helpers */
+.body-text { font-size: 15px; line-height: 1.7; }
+.body-text-light { font-size: 14px; line-height: 1.7; color: var(--text-light); font-style: italic; margin-bottom: 18px; }
+
+/* Toast */
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: white; padding: 12px 24px; border-radius: 40px; font-size: 14px; font-weight: 500; transition: transform .3s ease; z-index: 999; pointer-events: none; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Error */
+#error { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; padding: 40px; text-align: center; display: none; }
+
+/* SEO Keywords header */
+.seo-keywords-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.seo-keywords-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.seo-keyword-chip { background: linear-gradient(135deg, rgba(123,94,167,0.12) 0%, rgba(123,94,167,0.06) 100%); color: var(--purple-dark); border-radius: 30px; padding: 6px 16px; font-size: 13px; font-weight: 600; border: 1px solid rgba(123,94,167,0.2); }
+
+/* Section labels */
+.gruende-section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-light); margin-bottom: 10px; margin-top: 18px; }
+
+/* Section 2 – Persona-Strip */
+.persona-strip { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); border-radius: 16px; padding: 20px 24px; margin: 16px 0; color: white; }
+.persona-strip-name { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: white; margin-bottom: 4px; }
+.persona-strip-beruf { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
+.persona-strip-alltag { font-size: 14px; line-height: 1.65; color: rgba(255,255,255,0.88); margin-bottom: 12px; }
+.moment-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+.moment-chip { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.2); }
+.persona-strip-gedanke { font-family: 'Playfair Display', serif; font-size: 15px; font-style: italic; color: rgba(255,255,255,0.9); line-height: 1.7; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2); }
+
+/* Section 3 – Profilname variants */
+.profilname-variants { display: flex; flex-direction: column; gap: 10px; }
+.profilname-variant { display: flex; align-items: center; gap: 14px; background: var(--white); border-radius: 12px; border: 1px solid var(--lavender-dark); padding: 14px 16px; }
+.profilname-variant-best { border-color: #1a7a42; background: rgba(39,174,96,0.04); }
+.profilname-variant-nr { width: 26px; height: 26px; border-radius: 50%; background: var(--lavender-mid); color: var(--purple-dark); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.profilname-variant-best .profilname-variant-nr { background: rgba(39,174,96,0.15); color: #1a7a42; }
+.profilname-variant-text { font-size: 16px; font-weight: 700; color: var(--text); flex: 1; }
+.profilname-variant-best .profilname-variant-text { color: #1a5a30; }
+.profilname-variant-chars { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.profilname-variant-empfohlen { font-size: 11px; font-weight: 700; color: #1a7a42; background: rgba(39,174,96,0.1); border-radius: 20px; padding: 3px 10px; white-space: nowrap; }
+
+/* Section 4 – Current bio */
+.bio-aktuell-box { background: rgba(231,76,60,0.04); border: 1px solid rgba(231,76,60,0.18); border-radius: 12px; padding: 16px 18px; margin-bottom: 20px; }
+.bio-aktuell-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #a0392d; margin-bottom: 8px; }
+.bio-aktuell-text { font-size: 14px; white-space: pre-line; line-height: 1.85; color: var(--text-light); }
+
+/* Section 7 – Pin-post roles */
+.pinpost-psychologie { background: var(--lavender); border-radius: 10px; padding: 10px 14px; margin-top: 12px; font-size: 13px; color: var(--text-light); line-height: 1.55; }
+.tag-personal { color: #5a2a7a; background: rgba(90,42,122,0.08); border-color: rgba(90,42,122,0.2); }
+.tag-problem { color: #9a5010; background: rgba(154,80,16,0.08); border-color: rgba(154,80,16,0.2); }
+.tag-loesung { color: #1a7a42; background: rgba(26,122,66,0.08); border-color: rgba(26,122,66,0.2); }
+
+/* Section 9 – Säule icon */
+.saeule-icon { font-size: 22px; color: var(--purple); margin-bottom: 10px; }
+
+/* Section 10 – Hook blocks with sub-hooks */
+.hooklib-blocks { display: flex; flex-direction: column; gap: 10px; }
+.hook-block { background: var(--white); border-radius: 14px; border: 1px solid var(--lavender-dark); padding: 18px; }
+.hook-block-main { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 12px; }
+.hook-block-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 600px) { .hook-block-sub { grid-template-columns: 1fr; } }
+.hook-sub-item { background: var(--lavender); border-radius: 10px; padding: 10px 12px; }
+.hook-sub-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-light); margin-bottom: 4px; }
+.hook-sub-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+/* Section 12 – Wunschkundin-Profil */
+.wk-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.wk-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-family: 'Playfair Display', serif; font-weight: 700; flex-shrink: 0; }
+.wk-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--text); }
+.wk-meta { font-size: 13px; color: var(--text-light); margin-top: 3px; }
+.wk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+@media (max-width: 600px) { .wk-grid { grid-template-columns: 1fr; } }
+.wk-item { background: var(--white); border-radius: 14px; border: 1px solid var(--lavender-dark); padding: 16px; }
+.wk-item-full { grid-column: 1 / -1; }
+.wk-item-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--purple); margin-bottom: 8px; }
+.wk-item-text { font-size: 14px; line-height: 1.65; color: var(--text); }
+.wk-moments { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+.wk-moment { font-size: 13px; color: var(--text-light); padding: 4px 0 4px 10px; border-left: 2px solid var(--purple); }
+.wk-thoughts { display: flex; flex-direction: column; gap: 8px; }
+.wk-thought { font-size: 14px; font-style: italic; font-family: 'Playfair Display', serif; color: var(--text); line-height: 1.6; background: var(--lavender-mid); border-radius: 8px; padding: 8px 12px; }
+.wk-schmerz { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); border-radius: 16px; padding: 20px 24px; }
+.wk-schmerz-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+.wk-schmerz-text { font-family: 'Playfair Display', serif; font-size: 17px; font-style: italic; color: white; line-height: 1.7; }
+
+/* Section 13 – Abschluss Bausteine */
+.bausteine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+@media (max-width: 640px) { .bausteine-grid { grid-template-columns: 1fr 1fr; } }
+.baustein-card { background: var(--white); border-radius: 14px; border: 1px solid var(--lavender-dark); padding: 18px 16px; text-align: center; position: relative; }
+.baustein-card.aktiv { border-color: var(--purple); box-shadow: 0 0 0 2px rgba(123,94,167,0.15); }
+.baustein-aktiv-check { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; background: var(--purple); color: white; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.baustein-icon { font-size: 26px; margin-bottom: 8px; }
+.baustein-titel { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.baustein-beschreibung { font-size: 11px; color: var(--text-light); line-height: 1.5; }
+
+/* Print */
+@media print {
+  body { background: white; background-image: none; }
+  .card { box-shadow: none; break-inside: avoid; }
+  .pdf-btn, .pitch-section, .hook-copy, .bio-copy-btn, .toast { display: none !important; }
+  .begruendung-text { display: block !important; }
+  .report-container { padding: 0; }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .name-compare { grid-template-columns: 1fr; }
+  .hooks-grid { grid-template-columns: 1fr; }
+  .score-dashboard { grid-template-columns: repeat(3,1fr); }
+  .pinpost-card { padding-left: 16px; }
+  .pinpost-nr { display: none; }
+  .einstieg-card { padding: 24px; }
+  .pitch-section { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div style="font-size:14px;color:var(--text-light)">Bericht wird geladen…</div>
+</div>
+
+<div id="error">
+  <div style="font-size:48px">⚠️</div>
+  <div style="font-family:'Playfair Display',serif;font-size:24px;color:var(--text);margin-bottom:8px">Kein Bericht gefunden</div>
+  <div style="font-size:14px;color:var(--text-light);max-width:400px;line-height:1.6">
+    Dieser Link enthält keine Analysedaten. Bitte überprüfe den Link oder kontaktiere deine Beraterin.
+  </div>
+</div>
+
+<div id="report">
+  <div class="report-container">
+    <div class="report-header">
+      <div class="report-logo">✦ Profil-Reset</div>
+      <h1 id="report-title">Deine Instagram-<br>Profil-Analyse</h1>
+      <div class="report-meta" id="report-meta"></div>
+    </div>
+
+    <div id="einstieg-section"></div>
+    <div id="orientierungswoerter-section"></div>
+    <div id="farben-section"></div>
+    <div id="score-dashboard-section"></div>
+    <div id="sections-container"></div>
+
+    <div class="pdf-section">
+      <div class="pdf-section-icon">📄</div>
+      <div class="pdf-section-text">
+        <div class="pdf-section-title">Deine Ergebnisse sichern</div>
+        <div class="pdf-section-sub">Speichere deinen Profil-Reset als PDF — so hast du alle Empfehlungen immer griffbereit und kannst Schritt für Schritt abhaken.</div>
+      </div>
+      <button class="pdf-section-btn" onclick="window.print()">Als PDF speichern</button>
+    </div>
+
+    <div class="pitch-section">
+      <div class="pitch-eyebrow">Der nächste Schritt</div>
+      <h3>Dein Profil ist optimiert.<br>Jetzt zieht es deine Wunschkundin an.</h3>
+      <p>Du hast jetzt ein Profil, das sofort klar macht: "Hier bin ich richtig." Was jetzt fehlt, ist Content der deine Wunschkundin so direkt trifft, dass sie denkt: <em>"Wow — die meint genau mich."</em> Genau dafür ist der Wunschkundin KI Agent da.</p>
+      <a href="https://chatgpt.com/g/g-682e22f07b608191a2f2d5e00c67e012-wunschkundin-ki-agent" class="pitch-btn" target="_blank">Zum Wunschkundin KI Agent →</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Kopiert!</div>
+
+<script>
+function decodeData(hash) {
+  try {
+    return JSON.parse(decodeURIComponent(escape(atob(hash))));
+  } catch(e) { return null; }
+}
+
+function scoreClass(s) {
+  if (s >= 7) return 'high';
+  if (s >= 5) return 'mid';
+  return 'low';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg || 'Kopiert!';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('Kopiert!')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Kopiert!');
+  });
+}
+
+function formatDate(d) {
+  try {
+    return new Date(d).toLocaleDateString('de-DE', { day:'2-digit', month:'long', year:'numeric' });
+  } catch(e) { return d; }
+}
+
+function renderMeta(data) {
+  const m = data.meta || {};
+  const parts = [];
+  if (m.profil) parts.push(m.profil);
+  if (m.datum) parts.push(formatDate(m.datum));
+  document.getElementById('report-meta').innerHTML = parts.map(p => `<span>${p}</span>`).join('');
+}
+
+function renderEinstieg(data) {
+  if (!data.einstieg) return;
+  const vorname = (data.meta && data.meta.vorname) || '';
+
+  // Strip leading "Liebe X," and trailing "Deine Kristin" if GPT included them
+  let text = data.einstieg
+    .replace(/^Liebe\s+\S+[,.]?\s*/i, '')
+    .replace(/\s*Deine\s+Kristin\s*[♡❤]?\s*$/i, '')
+    .trim();
+
+  // Split into paragraphs on double newline or single newline
+  const paras = text.split(/\n\n|\n/).filter(p => p.trim());
+  const bodyHtml = paras.map(p => `<p>${p.trim()}</p>`).join('');
+
+  const screenshot = data.meta && data.meta.profilscreenshot;
+  const imgCol = screenshot
+    ? `<div class="einstieg-img-col"><img src="${screenshot}" alt="" style="object-position:top"></div>`
+    : '';
+  const gridStyle = screenshot ? '' : 'grid-template-columns:1fr';
+
+  document.getElementById('einstieg-section').innerHTML = `
+    <div class="einstieg-section-label">Kristins persönliche Einschätzung für dich</div>
+    <div class="einstieg-split" style="${gridStyle}">
+      ${imgCol}
+      <div class="einstieg-content-col">
+        <div class="einstieg-greeting">Liebe ${vorname},</div>
+        <div class="einstieg-body">${bodyHtml}</div>
+        <div class="einstieg-sign">Deine Kristin ♡</div>
+      </div>
+    </div>`;
+}
+
+function renderOrientierungswoerter(data) {
+  if (!data.orientierungswoerter) return;
+  const ow = data.orientierungswoerter;
+  const worte = (ow.woerter || []).map(w => `<span class="seo-keyword-chip">${w}</span>`).join('');
+  document.getElementById('orientierungswoerter-section').innerHTML = `
+    <div class="card" style="animation-delay:.1s">
+      <div class="seo-keywords-header">
+        <span class="seo-keywords-icon">🔍</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">So wirkt dein Profil auf Besucher</div>
+          <div style="font-size:12px;color:var(--text-light);margin-top:2px">Diese Signale sendet dein Profil – bewusst oder nicht</div>
+        </div>
+      </div>
+      <div class="worte-grid">${worte}</div>
+      ${ow.erklaerung ? `<div style="font-size:13px;color:var(--text-light);line-height:1.65;margin-top:10px;padding-top:10px;border-top:1px solid var(--lavender-mid)">${ow.erklaerung}</div>` : ''}
+    </div>`;
+}
+
+function renderScoreDashboard(data) {
+  const scored = (data.analyse || []).filter(a => a.score && a.nr >= 1 && a.nr <= 9);
+  if (!scored.length) return;
+  const cards = scored.map(a => {
+    const cls = scoreClass(a.score);
+    return `<div class="score-card">
+      <div class="score-card-nr">Punkt ${a.nr}</div>
+      <div class="score-card-title">${a.titel}</div>
+      <div class="score-circle score-${cls}">${a.score}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('score-dashboard-section').innerHTML = `<div class="score-dashboard">${cards}</div>`;
+}
+
+function renderSection1(item) {
+  const ergebnis = item.ergebnis || item.verdict || '';
+  const isBleiben = ergebnis.toLowerCase().includes('bleiben');
+  const verdictColor = isBleiben ? 'var(--green)' : 'var(--red)';
+  const checkSymbol = isBleiben ? '✓' : '×';
+  const gruende = (item.gruende || []).map(g =>
+    `<li><span class="check-icon" style="color:${verdictColor}">${checkSymbol}</span>${g}</li>`
+  ).join('');
+  return `
+    ${ergebnis ? `<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+      <div class="verdict-badge verdict-${isBleiben?'bleiben':'gehen'}">${ergebnis.toUpperCase()}</div>
+      <div style="font-size:14px;color:var(--text-light)">Das Urteil nach 3 Sekunden</div>
+    </div>` : ''}
+    ${item.inhalt && !gruende ? `<div class="body-text" style="margin-bottom:16px">${item.inhalt}</div>` : ''}
+    ${gruende ? `<div class="gruende-section-label" style="margin-top:0">Die Gründe im Detail</div><ul class="gruende-list" style="margin-bottom:0">${gruende}</ul>` : ''}
+    ${item.gedanke ? `<div class="gedanke-box">"${item.gedanke}"</div>` : ''}
+    ${item.schwachpunkt ? `<div class="schwachpunkt-box"><div class="schwachpunkt-label">Größter Hebel jetzt</div>${item.schwachpunkt}</div>` : ''}`;
+}
+
+function renderSection2(item) {
+  const pf = item.profil_filter || {};
+  const satz = item.satz || pf.satz || item.inhalt || '';
+  const anw = (item.anwendung || pf.anwendung || []).map(a => `<li>${a}</li>`).join('');
+  const wk = item.wunschkundin || pf.wunschkundin;
+  let personaHtml = '';
+  if (wk) {
+    const momente = (wk.momente || []).map(m => `<span class="moment-chip">${m}</span>`).join('');
+    personaHtml = `<div class="persona-strip">
+      <div class="persona-strip-name">${wk.name || 'Deine Wunschkundin'}</div>
+      ${wk.beruf ? `<div class="persona-strip-beruf">${wk.beruf}</div>` : ''}
+      ${wk.alltag ? `<div class="persona-strip-alltag">${wk.alltag}</div>` : ''}
+      ${momente ? `<div class="moment-chips">${momente}</div>` : ''}
+      ${wk.gedanke ? `<div class="persona-strip-gedanke">"${wk.gedanke}"</div>` : ''}
+    </div>`;
+  }
+  return `
+    ${satz ? `<div style="margin-bottom:${personaHtml||anw?'4':'0'}px">
+      <div class="gruende-section-label" style="margin-top:0">Dein Content-Filter</div>
+      <div class="filter-satz">"${satz}"</div>
+    </div>` : ''}
+    ${personaHtml}
+    ${anw ? `<div class="gruende-section-label">So wendest du ihn an</div><ul class="anwendung-list">${anw}</ul>` : ''}`;
+}
+
+function renderSection3(item) {
+  const alts = (item.alternativen || []);
+  const keywords = (item.seo_keywords || []).map(k =>
+    `<span style="display:inline-block;background:rgba(123,94,167,0.1);border:1px solid rgba(123,94,167,0.25);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;color:var(--purple);margin:3px 3px 3px 0">${k}</span>`
+  ).join('');
+  const allVariants = [item.empfehlung, ...alts].filter(Boolean);
+  const variantsHtml = allVariants.map((v, i) => `
+    <div class="profilname-variant${i===0?' profilname-variant-best':''}">
+      <div class="profilname-variant-nr">${i+1}</div>
+      <div style="flex:1">
+        <div class="profilname-variant-text">${v}</div>
+        <div class="profilname-variant-chars">${v.length} / 30 Zeichen</div>
+      </div>
+      ${i===0 ? '<span class="profilname-variant-empfohlen">✓ Empfohlen</span>' : ''}
+    </div>`).join('');
+  return `
+    ${item.inhalt ? `<div class="body-text" style="margin-bottom:18px">${item.inhalt}</div>` : ''}
+    ${keywords ? `<div style="margin-bottom:20px">
+      <div class="gruende-section-label" style="margin-top:0">Keywords für Instagram-Suche</div>
+      <div>${keywords}</div>
+    </div>` : ''}
+    ${item.aktuell ? `<div class="name-box name-box-current" style="margin-bottom:16px">
+      <div class="name-box-label">Aktueller Profilname</div>
+      <div class="name-box-value">${item.aktuell}</div>
+    </div>` : ''}
+    ${variantsHtml ? `<div style="margin-bottom:16px">
+      <div class="gruende-section-label" style="margin-top:0">Optimierte Varianten</div>
+      <div class="profilname-variants">${variantsHtml}</div>
+    </div>` : ''}
+    ${item.accountname_bewertung ? `<div style="background:var(--lavender-mid);border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.65">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-light);margin-bottom:6px">@Benutzername / Handle</div>
+      ${item.accountname_bewertung}
+    </div>` : ''}`;
+}
+
+function renderSection4(item) {
+  const stilLabels = {
+    'emotional': 'Emotional – spricht Frust an',
+    'verkaufsstark': 'Verkaufsstark – konkrete Zahlen',
+    'direkt': 'Direkt – klare Ansage',
+    'neugierig machend': 'Neugierig – Widerspruch als Hook',
+    'persoenlich & nahbar': 'Persönlich – Identifikation',
+    'persönlich & nahbar': 'Persönlich – Identifikation'
+  };
+  const aktuellHtml = item.bio_aktuell ? `<div class="bio-aktuell-box">
+    <div class="bio-aktuell-label">Deine aktuelle Bio</div>
+    <div class="bio-aktuell-text">${item.bio_aktuell}</div>
+  </div>` : '';
+  const diag = item.inhalt ? `<div class="body-text-light">${item.inhalt}</div>` : '';
+  const bioCards = (item.bios || []).map((bio) => {
+    const ok = bio.zeichen >= 130 && bio.zeichen <= 150;
+    const pct = Math.min(100, Math.max(0, Math.round(((bio.zeichen - 100) / 60) * 100)));
+    const fillColor = ok ? 'var(--green)' : 'var(--orange)';
+    const stilKey = (bio.stil || '').toLowerCase();
+    const stilLabel = stilLabels[stilKey] || bio.stil;
+    return `<div class="bio-card${bio.empfohlen ? ' empfohlen' : ''}">
+      <div class="bio-card-top">
+        <span class="bio-stil-badge">${stilLabel}</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${bio.empfohlen ? '<span class="empfohlen-star">★ Empfohlen</span>' : ''}
+          <button class="bio-copy-btn" onclick="copyText(this.dataset.text)" data-text="${(bio.text||'').replace(/"/g,'&quot;')}">Kopieren</button>
+        </div>
+      </div>
+      <div class="bio-text">${bio.text || ''}</div>
+      <div class="char-row">
+        <span>Zeichen</span>
+        <span class="${ok?'char-ok':'char-warn'}">${bio.zeichen || '?'} / 130–150</span>
+      </div>
+      <div class="char-bar"><div class="char-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+      <div class="bio-actions">
+        ${bio.begruendung ? `<button class="begruendung-toggle" onclick="var t=this.closest('.bio-actions').nextElementSibling;t.classList.toggle('open');this.textContent=t.classList.contains('open')?'▲ Wirkprinzip verbergen':'▼ Wirkprinzip zeigen'">▼ Wirkprinzip zeigen</button>` : '<span></span>'}
+      </div>
+      ${bio.begruendung ? `<div class="begruendung-text">${bio.begruendung}</div>` : ''}
+    </div>`;
+  }).join('');
+  return aktuellHtml + diag + (bioCards ? `<div class="bio-cards">${bioCards}</div>` : '');
+}
+
+function renderSection5(item) {
+  return `<div class="body-text">${item.inhalt || ''}</div>
+    ${item.schwachpunkt ? `<div class="schwachpunkt-box" style="margin-top:12px"><div class="schwachpunkt-label">Was nicht funktioniert</div>${item.schwachpunkt}</div>` : ''}
+    ${item.empfehlung ? `<div style="margin-top:12px;background:rgba(39,174,96,0.06);border:1px solid rgba(39,174,96,0.2);border-radius:12px;padding:14px 18px;font-size:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1a7a42;margin-bottom:4px">Empfehlung</div>${item.empfehlung}</div>` : ''}`;
+}
+
+function renderSection6(item) {
+  const intro = item.inhalt ? `<div class="body-text-light">${item.inhalt}</div>` : '';
+  const cards = (item.highlights || []).map(h => `
+    <div class="highlight-card">
+      <div class="highlight-title">${h.titel}</div>
+      ${h.beschreibung ? `<div style="font-size:13px;color:var(--text-light);line-height:1.5;margin-top:6px;margin-bottom:6px">${h.beschreibung}</div>` : ''}
+      <ul class="highlight-punkte">${(h.punkte||[]).map(p=>`<li>${p}</li>`).join('')}</ul>
+    </div>`).join('');
+  return intro + (cards ? `<div class="highlights-grid">${cards}</div>` : '');
+}
+
+const rolleConfig = {
+  'personal story': { label: 'Personal Story', cls: 'tag-personal' },
+  'personal': { label: 'Personal Story', cls: 'tag-personal' },
+  'wunschkundin problem': { label: 'Wunschkundin Problem', cls: 'tag-problem' },
+  'problem': { label: 'Wunschkundin Problem', cls: 'tag-problem' },
+  'lösung': { label: 'Lösung + Social Proof', cls: 'tag-loesung' },
+  'loesung': { label: 'Lösung + Social Proof', cls: 'tag-loesung' },
+  'trust': { label: 'Trust', cls: 'tag-trust' },
+  'community': { label: 'Community', cls: 'tag-community' },
+  'sales': { label: 'Sales', cls: 'tag-sales' }
+};
+const defaultRollen = ['Personal Story', 'Wunschkundin Problem', 'Lösung + Social Proof'];
+
+function renderSection7(item) {
+  const intro = item.inhalt ? `<div class="body-text-light">${item.inhalt}</div>` : '';
+  const posts = (item.pinposts || (item.feed_pinposts && item.feed_pinposts.pinposts) || []).map((p, idx) => {
+    const rolleKey = (p.rolle || p.ziel || '').toLowerCase();
+    const rc = rolleConfig[rolleKey] || { label: p.rolle || p.ziel || defaultRollen[idx] || '', cls: 'tag-community' };
+    return `<div class="pinpost-card">
+      <div class="pinpost-nr">${idx+1}</div>
+      <div class="pinpost-tags">
+        <span class="pinpost-tag ${rc.cls}">${rc.label}</span>
+        ${p.format ? `<span class="pinpost-tag tag-format">${p.format}</span>` : ''}
+      </div>
+      <div class="pinpost-hook">"${p.hook || ''}"</div>
+      ${p.inhalt ? `<div class="pinpost-row"><div class="pinpost-label">Inhalt</div><div class="pinpost-value">${p.inhalt}</div></div>` : ''}
+      ${p.wirkung ? `<div class="pinpost-row"><div class="pinpost-label">Warum das wirkt</div><div class="pinpost-value">${p.wirkung}</div></div>` : ''}
+      ${p.psychologie ? `<div class="pinpost-psychologie">${p.psychologie}</div>` : ''}
+    </div>`;
+  }).join('');
+  return intro + (posts ? `<div class="pinposts-list">${posts}</div>` : '');
+}
+
+const saeulenIcons = ['✦', '◆', '▲', '●', '★', '⬡'];
+
+function renderSection9(item) {
+  const intro = item.inhalt ? `<div class="body-text-light">${item.inhalt}</div>` : '';
+  const cards = (item.saeulen||[]).map((s, i) => `
+    <div class="saeule-card">
+      <div class="saeule-icon">${saeulenIcons[i] || '✦'}</div>
+      <div class="saeule-title">${s.titel}</div>
+      <div class="saeule-beschreibung">${s.beschreibung}</div>
+      <ul class="saeule-ideen">${(s.ideen||[]).map(id=>`<li>${id}</li>`).join('')}</ul>
+    </div>`).join('');
+  return intro + (cards ? `<div class="saeulen-grid">${cards}</div>` : '');
+}
+
+const catColorMap = { community:'cat-community', trust:'cat-trust', sales:'cat-sales', viral:'cat-viral', provokation:'cat-provokation' };
+
+function renderSection10(item) {
+  const intro = item.inhalt ? `<div class="body-text-light">${item.inhalt}</div>` : '';
+  const cats = (item.kategorien||[]).map(cat => {
+    const key = (cat.kategorie||'').toLowerCase();
+    const colorClass = catColorMap[key] || 'cat-community';
+    const hasRichHooks = (cat.hooks||[]).some(h => h.nebenhook || h.visuell);
+    const hooksHtml = (cat.hooks||[]).map(h => {
+      if (h.nebenhook || h.visuell) {
+        return `<div class="hook-block">
+          <div class="hook-block-main">${h.hook}</div>
+          <div class="hook-block-sub">
+            ${h.nebenhook ? `<div class="hook-sub-item"><div class="hook-sub-label">Neben-Hook</div><div class="hook-sub-text">${h.nebenhook}</div></div>` : ''}
+            ${h.visuell ? `<div class="hook-sub-item"><div class="hook-sub-label">Visueller Tipp</div><div class="hook-sub-text">${h.visuell}</div></div>` : ''}
+          </div>
+          <div style="margin-top:10px;text-align:right">
+            <button class="hook-copy" onclick="copyText(this.dataset.text)" data-text="${(h.hook||'').replace(/"/g,'&quot;')}">↗ Kopieren</button>
+          </div>
+        </div>`;
+      }
+      return `<div class="hook-item">
+        <div class="hook-text">${h.hook}</div>
+        <button class="hook-copy" onclick="copyText(this.dataset.text)" data-text="${(h.hook||'').replace(/"/g,'&quot;')}">↗</button>
+      </div>`;
+    }).join('');
+    return `<div>
+      <div class="hooklib-cat-header">
+        <span class="hooklib-cat-badge ${colorClass}">${cat.kategorie}</span>
+        ${cat.ziel ? `<span class="hooklib-cat-ziel">${cat.ziel}</span>` : ''}
+      </div>
+      <div class="${hasRichHooks ? 'hooklib-blocks' : 'hooks-grid'}">${hooksHtml}</div>
+    </div>`;
+  }).join('');
+  return intro + (cats ? `<div class="hooklib-categories">${cats}</div>` : '');
+}
+
+function renderSection11(item) {
+  const todos = (item.todos||[]).map((t,i) =>
+    `<li class="todo-item"><div class="todo-nr">${i+1}</div><div class="todo-text">${t}</div></li>`
+  ).join('');
+  return todos ? `<ul class="todos-list">${todos}</ul>` : '';
+}
+
+function renderWunschkundinProfil(item) {
+  const momente = (item.momente || []).map(m => `<div class="wk-moment">${m}</div>`).join('');
+  const gedanken = (item.gedanken || []).map(g => `<div class="wk-thought">"${g}"</div>`).join('');
+  return `
+    <div class="wk-header">
+      <div class="wk-avatar">${(item.name||'W').charAt(0)}</div>
+      <div>
+        <div class="wk-name">${item.name || 'Deine Wunschkundin'}</div>
+        ${item.alter || item.beruf ? `<div class="wk-meta">${[item.alter, item.beruf].filter(Boolean).join(' · ')}</div>` : ''}
+      </div>
+    </div>
+    <div class="wk-grid">
+      ${item.alltag ? `<div class="wk-item wk-item-full">
+        <div class="wk-item-label">Ihr Alltag</div>
+        <div class="wk-item-text">${item.alltag}</div>
+        ${momente ? `<div class="wk-moments">${momente}</div>` : ''}
+      </div>` : ''}
+      ${item.gefuehl ? `<div class="wk-item">
+        <div class="wk-item-label">Wie sie sich fühlt</div>
+        <div class="wk-item-text">${item.gefuehl}</div>
+      </div>` : ''}
+      ${gedanken ? `<div class="wk-item">
+        <div class="wk-item-label">Was sie denkt</div>
+        <div class="wk-thoughts">${gedanken}</div>
+      </div>` : ''}
+    </div>
+    ${item.schmerz ? `<div class="wk-schmerz">
+      <div class="wk-schmerz-label">Ihr größter Schmerz</div>
+      <div class="wk-schmerz-text">"${item.schmerz}"</div>
+    </div>` : ''}`;
+}
+
+const bausteinDefs = [
+  { key: 'positionierung', icon: '🎯', titel: 'Positionierung', default: 'Wofür du stehst und für wen' },
+  { key: 'angebot', icon: '📦', titel: 'Angebot', default: 'Was du verkaufst und wie' },
+  { key: 'profil', icon: '✦', titel: 'Profil', default: 'Dein Instagram-Profil – dieser Report' },
+  { key: 'lead_magnet', icon: '🧲', titel: 'Lead Magnet', default: 'Kostenloser Einstieg in dein System' },
+  { key: 'content', icon: '📲', titel: 'Content', default: 'Posts, Reels, Stories' },
+  { key: 'kaeuferpsychologie', icon: '🧠', titel: 'Käuferpsychologie', default: 'Wie Vertrauen zu Kauf wird' }
+];
+
+function renderAbschluss(item) {
+  const einleitung = item.inhalt || item.einleitung || '';
+  const bausteine = item.bausteine || [];
+  const bausteinHtml = bausteinDefs.map(def => {
+    const d = bausteine.find(b => b.key === def.key || b.titel === def.titel) || {};
+    const aktiv = d.status === 'aktiv' || def.key === 'profil';
+    return `<div class="baustein-card${aktiv ? ' aktiv' : ''}">
+      ${aktiv ? '<div class="baustein-aktiv-check">✓</div>' : ''}
+      <div class="baustein-icon">${def.icon}</div>
+      <div class="baustein-titel">${d.titel || def.titel}</div>
+      <div class="baustein-beschreibung">${d.beschreibung || def.default}</div>
+    </div>`;
+  }).join('');
+  return `
+    ${einleitung ? `<div class="body-text" style="margin-bottom:24px">${einleitung}</div>` : ''}
+    <div class="bausteine-grid">${bausteinHtml}</div>
+    <div style="background:rgba(123,94,167,0.06);border:1px solid rgba(123,94,167,0.2);border-radius:14px;padding:18px 20px">
+      <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:6px">Das Profil ist Baustein 3 von 6.</div>
+      <div style="font-size:14px;color:var(--text-light);line-height:1.65">Alle anderen Bausteine bauen darauf auf. Wenn du bereit bist, das komplette System aufzubauen – melde dich. Das ist genau die Arbeit, die wir gemeinsam tun können.</div>
+    </div>`;
+}
+
+function renderSection8(item) {
+  const leitlinien = (item.leitlinien || []).map(l =>
+    `<li style="padding:8px 0;border-bottom:1px solid var(--lavender-dark);font-size:14px;line-height:1.6">${l}</li>`
+  ).join('');
+  return `
+    ${item.inhalt ? `<div class="body-text" style="margin-bottom:16px">${item.inhalt}</div>` : ''}
+    ${leitlinien ? `<div class="gruende-section-label">Story-Leitlinien</div><ul style="list-style:none;padding:0">${leitlinien}</ul>` : ''}`;
+}
+
+const renderers = {
+  1: renderSection1, 2: renderSection2, 3: renderSection3,
+  4: renderSection4, 5: renderSection5, 6: renderSection6,
+  7: renderSection7, 8: renderSection8, 9: renderSection9, 10: renderSection10,
+  11: renderSection11, 12: renderWunschkundinProfil, 13: renderAbschluss
+};
+
+// ── Farbpalette ──────────────────────────────────────────
+function renderFarben(data) {
+  if (!data.farben) return;
+  const f = data.farben;
+  const colors = [
+    { label: 'Primärfarbe', hex: f.primaer },
+    { label: 'Akzentfarbe', hex: f.akzent },
+    { label: 'Hintergrund', hex: f.hintergrund }
+  ].filter(c => c.hex);
+  if (!colors.length) return;
+  const swatches = colors.map(c => `
+    <div class="swatch">
+      <div class="swatch-color" style="background:${c.hex}"></div>
+      <div class="swatch-hex">${c.hex.toUpperCase()}</div>
+      <div class="swatch-label">${c.label}</div>
+    </div>`).join('');
+  const fontHtml = f.schrift ? `
+    <div class="farben-font">
+      <span class="farben-font-label">Empfohlene Schrift</span>
+      <span class="farben-font-name" style="font-family:'${f.schrift}',sans-serif">${f.schrift}</span>
+    </div>` : '';
+  document.getElementById('farben-section').innerHTML = `
+    <div class="card" style="animation-delay:.15s">
+      <div class="section-header">
+        <div class="section-nr" style="background:${f.primaer||'var(--purple)'}">✦</div>
+        <div class="section-title">Deine Brand-Farben</div>
+      </div>
+      <div class="farben-palette">${swatches}</div>
+      ${fontHtml}
+    </div>`;
+}
+
+// ── Report render ─────────────────────────────────────────
+function renderReport(data) {
+  renderMeta(data);
+  renderEinstieg(data);
+  renderOrientierungswoerter(data);
+  renderFarben(data);
+  renderScoreDashboard(data);
+
+  const container = document.getElementById('sections-container');
+  (data.analyse||[]).forEach((item, idx) => {
+    const renderer = renderers[item.nr];
+    if (!renderer) return;
+    const content = renderer(item);
+    if (!content || !content.trim()) return;
+    const hasScore = item.score && item.nr >= 1 && item.nr <= 9;
+    const scoreBadge = hasScore ? `<span class="score-badge ${scoreClass(item.score)}">${item.score}/10</span>` : '';
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.style.animationDelay = `${idx * 0.07}s`;
+    div.innerHTML = `
+      <div class="section-header">
+        <div class="section-nr">${item.nr}</div>
+        <div class="section-title">${item.titel}</div>
+        ${scoreBadge}
+      </div>
+      <div>${content}</div>`;
+    container.appendChild(div);
+  });
+}
+
+// Init
+(function() {
+  const hash = window.location.hash.slice(1);
+  if (!hash) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error').style.display = 'flex';
+    return;
+  }
+  const data = decodeData(hash);
+  if (!data) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error').style.display = 'flex';
+    return;
+  }
+  renderReport(data);
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('report').style.display = 'block';
+})();
+</script>
+</body>
+</html>
