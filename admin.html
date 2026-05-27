@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil-Reset – Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple: #7B5EA7;
+  --purple-dark: #5A4080;
+  --lavender: #F5EBF8;
+  --lavender-mid: #EDE0F5;
+  --lavender-dark: #D4C0E8;
+  --text: #2D1B4E;
+  --text-light: rgba(45,27,78,0.6);
+  --white: #FFFFFF;
+  --green: #27AE60;
+  --red: #E74C3C;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--lavender);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(123,94,167,0.12) 0%, transparent 50%),
+    radial-gradient(circle at 85% 85%, rgba(212,192,232,0.25) 0%, transparent 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+.container { width: 100%; max-width: 640px; }
+
+/* Login */
+#login { animation: fadeUp .5s ease both; }
+.login-card {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1px solid var(--lavender-dark);
+  box-shadow: 0 8px 40px rgba(123,94,167,0.12);
+  padding: 48px 40px;
+  text-align: center;
+}
+.login-logo { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--purple); margin-bottom: 16px; }
+.login-card h1 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--text); margin-bottom: 8px; }
+.login-card p { font-size: 14px; color: var(--text-light); margin-bottom: 32px; }
+.pw-input {
+  width: 100%;
+  background: var(--lavender);
+  border: 1.5px solid var(--lavender-dark);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  margin-bottom: 14px;
+  text-align: center;
+  letter-spacing: .1em;
+}
+.pw-input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(123,94,167,0.12); }
+.pw-input.error { border-color: var(--red); background: rgba(231,76,60,0.04); }
+.error-msg { font-size: 13px; color: var(--red); margin-bottom: 14px; display: none; }
+
+/* Admin panel */
+#admin { display: none; animation: fadeUp .5s ease both; }
+.admin-header { text-align: center; margin-bottom: 32px; }
+.admin-header h1 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--text); margin-bottom: 8px; }
+.admin-header p { font-size: 14px; color: var(--text-light); }
+
+.card {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid var(--lavender-dark);
+  box-shadow: 0 4px 24px rgba(123,94,167,0.08);
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.card-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--purple);
+  margin-bottom: 10px;
+  display: block;
+}
+textarea {
+  width: 100%;
+  background: var(--lavender);
+  border: 1.5px solid var(--lavender-dark);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  resize: vertical;
+  min-height: 240px;
+  transition: border-color .2s, box-shadow .2s;
+  line-height: 1.5;
+}
+textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(123,94,167,0.12); }
+textarea.valid { border-color: var(--green); }
+textarea.invalid { border-color: var(--red); }
+
+.json-status {
+  font-size: 12px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 18px;
+}
+.status-ok { color: var(--green); font-weight: 600; }
+.status-err { color: var(--red); font-weight: 600; }
+
+.btn {
+  width: 100%;
+  background: var(--purple);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 16px 22px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s, background .15s;
+  box-shadow: 0 4px 20px rgba(123,94,167,0.35);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(123,94,167,0.45); background: var(--purple-dark); }
+.btn:disabled { opacity: .5; cursor: default; transform: none; box-shadow: none; }
+
+/* Result */
+#result-section { display: none; }
+.result-card {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+  border-radius: 20px;
+  padding: 28px;
+  color: white;
+}
+.result-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; opacity: .7; margin-bottom: 12px; }
+.result-link-row { display: flex; gap: 10px; align-items: center; }
+.result-link-input {
+  flex: 1;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: white;
+  outline: none;
+  cursor: text;
+  word-break: break-all;
+  min-height: 46px;
+  white-space: pre-wrap;
+  overflow: auto;
+}
+.btn-copy {
+  background: white;
+  color: var(--purple-dark);
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+.btn-copy:hover { background: var(--lavender); }
+.btn-copy.copied { background: rgba(39,174,96,0.9); color: white; }
+.result-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.btn-preview {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  color: white;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s;
+}
+.btn-preview:hover { background: rgba(255,255,255,0.25); }
+
+/* Color extraction */
+.upload-zone { border: 2px dashed var(--lavender-dark); border-radius: 14px; padding: 24px; text-align: center; cursor: pointer; transition: all .2s; background: var(--lavender); position: relative; }
+.upload-zone:hover, .upload-zone.drag { border-color: var(--purple); background: var(--lavender-mid); }
+.upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-zone-icon { font-size: 28px; margin-bottom: 8px; }
+.upload-zone-text { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.upload-zone-sub { font-size: 12px; color: var(--text-light); }
+.color-preview { display: none; margin-top: 16px; }
+.color-preview.visible { display: block; }
+.color-swatches { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: flex-end; }
+.color-swatch-item { text-align: center; cursor: pointer; position: relative; }
+.color-swatch-item.selected::after { content: '✓'; position: absolute; top: 4px; right: 4px; font-size: 12px; font-weight: 900; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+.color-swatch-box { width: 52px; height: 52px; border-radius: 10px; border: 2px solid transparent; transition: border-color .15s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.color-swatch-item.selected .color-swatch-box { border-color: var(--purple); }
+.color-swatch-hex { font-size: 10px; font-family: monospace; color: var(--text-light); margin-top: 4px; }
+.color-roles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px; }
+.color-role-box { background: var(--lavender); border-radius: 10px; padding: 10px; border: 1px solid var(--lavender-dark); }
+.color-role-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-light); margin-bottom: 6px; }
+.color-role-swatch { width: 32px; height: 32px; border-radius: 7px; border: 1px solid rgba(0,0,0,0.08); margin-bottom: 5px; cursor: pointer; }
+.color-role-hex { font-size: 11px; font-family: monospace; color: var(--text); font-weight: 600; }
+.font-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--lavender-mid); flex-wrap: wrap; }
+.font-label { font-size: 12px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: .05em; }
+.font-select { background: var(--lavender); border: 1.5px solid var(--lavender-dark); border-radius: 8px; padding: 6px 10px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text); outline: none; cursor: pointer; }
+.font-select:focus { border-color: var(--purple); }
+
+/* Instructions */
+.instruction-card { background: rgba(255,255,255,0.6); }
+.instruction-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.step-list { list-style: none; }
+.step-list li { font-size: 13px; color: var(--text-light); line-height: 1.6; padding: 6px 0; border-bottom: 1px solid var(--lavender-mid); display: flex; gap: 10px; }
+.step-list li:last-child { border-bottom: none; }
+.step-list li::before { content: attr(data-nr); background: var(--purple); color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+
+/* Logout */
+.logout-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: var(--text-light);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  display: block;
+  margin: 16px auto 0;
+  text-decoration: underline;
+}
+
+/* Toast */
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: white; padding: 12px 24px; border-radius: 40px; font-size: 14px; font-weight: 500; transition: transform .3s ease; z-index: 999; pointer-events: none; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 500px) {
+  .login-card { padding: 32px 24px; }
+  .card { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login">
+  <div class="login-card">
+    <div class="login-logo">✦ Profil-Reset</div>
+    <h1>Admin-Bereich</h1>
+    <p>Nur für Kristin Leingang</p>
+    <input class="pw-input" type="password" id="pw-input" placeholder="Passwort eingeben" onkeydown="if(event.key==='Enter')checkPW()">
+    <div class="error-msg" id="pw-error">Falsches Passwort. Bitte nochmals versuchen.</div>
+    <button class="btn" onclick="checkPW()">Einloggen</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin">
+  <div class="container">
+    <div class="admin-header">
+      <div style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--purple);margin-bottom:12px">✦ Profil-Reset Admin</div>
+      <h1>Kundinnen-Link erstellen</h1>
+      <p>GPT-Analyse einfügen und Link für die Kundin generieren</p>
+    </div>
+
+    <div class="card instruction-card">
+      <div class="instruction-title">So geht's</div>
+      <ul class="step-list">
+        <li data-nr="1">Profil-Analyse im GPT durchführen und am Ende den JSON-Export anfordern</li>
+        <li data-nr="2">Screenshots hochladen → Brandfarben werden automatisch erkannt</li>
+        <li data-nr="3">Vollständiges JSON einfügen</li>
+        <li data-nr="4">Link generieren und direkt an die Kundin senden</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <label class="card-label">Brand-Farben extrahieren <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-light)">(optional)</span></label>
+      <div class="upload-zone" id="upload-zone"
+        ondragover="event.preventDefault();this.classList.add('drag')"
+        ondragleave="this.classList.remove('drag')"
+        ondrop="handleDrop(event)">
+        <input type="file" accept="image/*" multiple onchange="handleFiles(this.files)">
+        <div class="upload-zone-icon">🖼</div>
+        <div class="upload-zone-text">Screenshots hier ablegen oder klicken</div>
+        <div class="upload-zone-sub">Feed-Screenshots hochladen — Farben werden automatisch erkannt</div>
+      </div>
+      <div class="color-preview" id="color-preview">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-light);margin-bottom:10px">Erkannte Farben — klicke um zuzuweisen</div>
+        <div class="color-swatches" id="color-swatches"></div>
+        <div class="color-roles">
+          <div class="color-role-box">
+            <div class="color-role-label">Primärfarbe</div>
+            <div class="color-role-swatch" id="role-primaer" onclick="reassignRole('primaer')"></div>
+            <div class="color-role-hex" id="hex-primaer">–</div>
+          </div>
+          <div class="color-role-box">
+            <div class="color-role-label">Akzentfarbe</div>
+            <div class="color-role-swatch" id="role-akzent" onclick="reassignRole('akzent')"></div>
+            <div class="color-role-hex" id="hex-akzent">–</div>
+          </div>
+          <div class="color-role-box">
+            <div class="color-role-label">Hintergrund</div>
+            <div class="color-role-swatch" id="role-hintergrund" onclick="reassignRole('hintergrund')"></div>
+            <div class="color-role-hex" id="hex-hintergrund">–</div>
+          </div>
+        </div>
+        <div class="font-row">
+          <span class="font-label">Empfohlene Schrift</span>
+          <select class="font-select" id="font-select" onchange="updateFont()">
+            <option value="DM Sans">DM Sans</option>
+            <option value="Playfair Display">Playfair Display</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Raleway">Raleway</option>
+            <option value="Lato">Lato</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="card-label">Teil 1 – Analyse 1–4 <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-light)">(Pflicht)</span></label>
+      <div style="font-size:12px;color:var(--text-light);margin-bottom:10px">Einstieg · Orientierungswörter · 3-Sekunden · Profil-Filter · Profilname · Bio</div>
+      <textarea id="json-input-1" placeholder='{"meta":{...},"einstieg":"...","bio_aktuell":"...","orientierungswoerter":{...},"analyse":[...]}' oninput="validateAllJSON()"></textarea>
+      <div class="json-status" id="json-status-1"></div>
+    </div>
+
+    <div class="card">
+      <label class="card-label">Teil 2 – Analyse 5–9 <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-light)">(optional)</span></label>
+      <div style="font-size:12px;color:var(--text-light);margin-bottom:10px">Profilbild · Highlights · Feed & Pins · Story · Content-Säulen</div>
+      <textarea id="json-input-2" placeholder='{"analyse":[{"nr":5,...},{"nr":6,...},{"nr":7,...},{"nr":8,...},{"nr":9,...}]}' oninput="validateAllJSON()"></textarea>
+      <div class="json-status" id="json-status-2"></div>
+    </div>
+
+    <div class="card">
+      <label class="card-label">Teil 3 – Analyse 10–13 <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-light)">(optional)</span></label>
+      <div style="font-size:12px;color:var(--text-light);margin-bottom:10px">Hooks · Nächste Schritte · Wunschkundin · Abschluss</div>
+      <textarea id="json-input-3" placeholder='{"wunschkundin_profil":{...},"abschluss":{...},"analyse":[{"nr":10,...},{"nr":11,...}]}' oninput="validateAllJSON()"></textarea>
+      <div class="json-status" id="json-status-3"></div>
+    </div>
+
+    <button class="btn" id="generate-btn" onclick="generateLink()" disabled>🔗 Kundinnen-Link erstellen</button>
+
+    <div id="result-section" style="margin-top:20px">
+      <div class="result-card">
+        <div class="result-label">✓ Link erstellt — jetzt an die Kundin senden</div>
+        <div class="result-link-row">
+          <input class="result-link-input" id="link-output" type="text" readonly onclick="this.select()">
+          <button class="btn-copy" id="copy-btn" onclick="copyLink()">Kopieren</button>
+        </div>
+        <div class="result-actions">
+          <a class="btn-preview" id="preview-link" href="#" target="_blank">Vorschau öffnen →</a>
+        </div>
+      </div>
+    </div>
+
+    <button class="logout-btn" onclick="logout()">Ausloggen</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">Kopiert!</div>
+
+<script>
+const PASSWORD = 'kristin2026';
+const BASE_URL = window.location.origin + '/report.html';
+
+// ── Profil-Screenshot ─────────────────────────────────────
+let profilScreenshot = null;
+
+function handleScreenshotFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const maxW = 320;
+      const scale = Math.min(1, maxW / img.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      profilScreenshot = canvas.toDataURL('image/jpeg', 0.75);
+      document.getElementById('screenshot-preview-img').src = profilScreenshot;
+      document.getElementById('screenshot-preview-wrap').style.display = 'block';
+      document.getElementById('screenshot-placeholder').style.display = 'none';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function handleScreenshotDrop(e) {
+  e.preventDefault();
+  document.getElementById('screenshot-zone').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) handleScreenshotFile(f);
+}
+function clearScreenshot() {
+  profilScreenshot = null;
+  document.getElementById('screenshot-preview-wrap').style.display = 'none';
+  document.getElementById('screenshot-placeholder').style.display = 'block';
+}
+
+// ── Farbextraktion ────────────────────────────────────────
+let extractedColors = [];
+let assignedColors = { primaer: null, akzent: null, hintergrund: null };
+let selectedFont = 'DM Sans';
+let pendingRole = null;
+
+function rgbToHex(r, g, b) {
+  return '#' + [r,g,b].map(v => Math.min(255,v).toString(16).padStart(2,'0')).join('');
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return { r, g, b };
+}
+
+function getLuminance(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  return (0.299*r + 0.587*g + 0.114*b) / 255;
+}
+
+function recommendFont(primaryHex) {
+  const { r, g, b } = hexToRgb(primaryHex);
+  const rn = r/255, gn = g/255, bn = b/255;
+  const max = Math.max(rn,gn,bn), min = Math.min(rn,gn,bn);
+  const l = (max+min)/2;
+  const s = max===min ? 0 : l>0.5 ? (max-min)/(2-max-min) : (max-min)/(max+min);
+  let h = 0;
+  if (max !== min) {
+    if (max===rn) h = ((gn-bn)/(max-min)+6)%6;
+    else if (max===gn) h = (bn-rn)/(max-min)+2;
+    else h = (rn-gn)/(max-min)+4;
+    h *= 60;
+  }
+  if (l > 0.75) return 'Raleway';
+  if ((h < 30 || h > 300) && s > 0.25) return 'Playfair Display';
+  if (h > 250 && h < 330) return 'Playfair Display';
+  if (h > 20 && h < 60 && s < 0.45) return 'Lato';
+  if (h > 140 && h < 240) return 'Montserrat';
+  return 'DM Sans';
+}
+
+function extractColorsFromImage(img) {
+  const canvas = document.createElement('canvas');
+  const MAX = 180;
+  const scale = Math.min(MAX/img.naturalWidth, MAX/img.naturalHeight, 1);
+  canvas.width = Math.round(img.naturalWidth * scale);
+  canvas.height = Math.round(img.naturalHeight * scale);
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+  const colorMap = {};
+  const step = 3;
+  for (let i = 0; i < data.length; i += 4*step) {
+    const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
+    if (a < 200) continue;
+    const lum = (r+g+b)/3;
+    if (lum > 245 || lum < 10) continue;
+    const qr=Math.round(r/20)*20, qg=Math.round(g/20)*20, qb=Math.round(b/20)*20;
+    const key=`${qr},${qg},${qb}`;
+    colorMap[key] = (colorMap[key]||0)+1;
+  }
+  return Object.entries(colorMap)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,8)
+    .map(([key])=>{ const [r,g,b]=key.split(',').map(Number); return rgbToHex(r,g,b); });
+}
+
+function processImages(files) {
+  const promises = Array.from(files).map(file => new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => { resolve(extractColorsFromImage(img)); URL.revokeObjectURL(url); };
+    img.src = url;
+  }));
+  Promise.all(promises).then(results => {
+    const merged = {};
+    results.flat().forEach(hex => { merged[hex] = (merged[hex]||0)+1; });
+    extractedColors = Object.entries(merged).sort((a,b)=>b[1]-a[1]).map(([hex])=>hex).slice(0,8);
+    // Auto-assign: brightest = hintergrund, most saturated = primaer, rest = akzent
+    const sorted = [...extractedColors].sort((a,b) => getLuminance(b)-getLuminance(a));
+    assignedColors.hintergrund = sorted[0] || null;
+    assignedColors.primaer = extractedColors.find(h => {
+      const lum = getLuminance(h); return lum < 0.85 && lum > 0.1;
+    }) || extractedColors[1] || null;
+    assignedColors.akzent = extractedColors.find(h =>
+      h !== assignedColors.primaer && h !== assignedColors.hintergrund
+    ) || null;
+    if (assignedColors.primaer) {
+      const rec = recommendFont(assignedColors.primaer);
+      selectedFont = rec;
+      document.getElementById('font-select').value = rec;
+    }
+    renderColorUI();
+  });
+}
+
+function handleFiles(files) { if (files.length) processImages(files); }
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag');
+  if (e.dataTransfer.files.length) processImages(e.dataTransfer.files);
+}
+
+function renderColorUI() {
+  const swatchEl = document.getElementById('color-swatches');
+  swatchEl.innerHTML = extractedColors.map((hex,i) => {
+    const isAssigned = Object.values(assignedColors).includes(hex);
+    return `<div class="color-swatch-item${isAssigned?' selected':''}" onclick="selectSwatch('${hex}')" title="${hex}">
+      <div class="color-swatch-box" style="background:${hex}"></div>
+      <div class="color-swatch-hex">${hex.toUpperCase()}</div>
+    </div>`;
+  }).join('');
+  ['primaer','akzent','hintergrund'].forEach(role => {
+    const hex = assignedColors[role];
+    document.getElementById(`role-${role}`).style.background = hex || '#eee';
+    document.getElementById(`hex-${role}`).textContent = hex ? hex.toUpperCase() : '–';
+  });
+  document.getElementById('color-preview').classList.add('visible');
+}
+
+function selectSwatch(hex) {
+  if (!pendingRole) {
+    showToast('Klicke zuerst auf eine Rolle (Primär, Akzent, Hintergrund)');
+    return;
+  }
+  assignedColors[pendingRole] = hex;
+  pendingRole = null;
+  renderColorUI();
+}
+
+function reassignRole(role) {
+  pendingRole = role;
+  showToast(`Wähle jetzt eine Farbe für: ${role}`);
+}
+
+function updateFont() {
+  selectedFont = document.getElementById('font-select').value;
+}
+
+function getFarbenData() {
+  const hasAny = assignedColors.primaer || assignedColors.akzent || assignedColors.hintergrund;
+  if (!hasAny) return null;
+  return {
+    primaer: assignedColors.primaer || undefined,
+    akzent: assignedColors.akzent || undefined,
+    hintergrund: assignedColors.hintergrund || undefined,
+    schrift: selectedFont
+  };
+}
+
+function checkPW() {
+  const val = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('pw-error');
+  const inputEl = document.getElementById('pw-input');
+  if (val === PASSWORD) {
+    sessionStorage.setItem('pr_admin', '1');
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('admin').style.display = 'block';
+    inputEl.classList.remove('error');
+    errEl.style.display = 'none';
+  } else {
+    inputEl.classList.add('error');
+    errEl.style.display = 'block';
+    inputEl.select();
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('pr_admin');
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('admin').style.display = 'none';
+  document.getElementById('pw-input').value = '';
+}
+
+function validatePart(id, statusId, required) {
+  const val = document.getElementById(id).value.trim();
+  const statusEl = document.getElementById(statusId);
+  const ta = document.getElementById(id);
+  if (!val) {
+    statusEl.innerHTML = required ? '' : '<span style="color:var(--text-light)">– leer (optional)</span>';
+    ta.classList.remove('valid','invalid');
+    return !required;
+  }
+  try {
+    const data = JSON.parse(val);
+    const count = (data.analyse || []).length;
+    statusEl.innerHTML = `<span class="status-ok">✓ Gültiges JSON</span> <span style="color:var(--text-light)">— ${count} Abschnitte</span>`;
+    ta.classList.remove('invalid'); ta.classList.add('valid');
+    return true;
+  } catch(e) {
+    statusEl.innerHTML = `<span class="status-err">✗ ${e.message.substring(0,60)}</span>`;
+    ta.classList.remove('valid'); ta.classList.add('invalid');
+    return false;
+  }
+}
+
+function validateAllJSON() {
+  const ok1 = validatePart('json-input-1','json-status-1', true);
+  validatePart('json-input-2','json-status-2', false);
+  validatePart('json-input-3','json-status-3', false);
+  document.getElementById('generate-btn').disabled = !ok1;
+}
+
+function mergeJSONParts() {
+  const v1 = document.getElementById('json-input-1').value.trim();
+  const v2 = document.getElementById('json-input-2').value.trim();
+  const v3 = document.getElementById('json-input-3').value.trim();
+
+  let data = normalizeGPTOutput(JSON.parse(v1));
+
+  if (v2) {
+    try {
+      const p2 = JSON.parse(v2);
+      if (p2.analyse) data.analyse.push(...p2.analyse);
+      if (p2.farben) data.farben = p2.farben;
+    } catch(e) { console.warn('Teil 2 Parse-Fehler:', e.message); }
+  }
+
+  if (v3) {
+    try {
+      const p3 = JSON.parse(v3);
+      if (p3.analyse) data.analyse.push(...p3.analyse);
+      if (p3.wunschkundin_profil) data.wunschkundin_profil = p3.wunschkundin_profil;
+      if (p3.abschluss) data.abschluss = p3.abschluss;
+    } catch(e) { console.warn('Teil 3 Parse-Fehler:', e.message); }
+  }
+
+  // Wunschkundin-Profil → nr:12 analyse-Item
+  if (data.wunschkundin_profil && !data.analyse.find(a => a.nr === 12)) {
+    data.analyse.push({ nr: 12, titel: 'Deine Wunschkundin', ...data.wunschkundin_profil });
+  }
+  // Abschluss → nr:13 analyse-Item
+  if (data.abschluss && !data.analyse.find(a => a.nr === 13)) {
+    data.analyse.push({ nr: 13, titel: 'Einordnung: Dein Profil im Gesamtsystem', ...data.abschluss });
+  }
+
+  data.analyse.sort((a, b) => (a.nr || 0) - (b.nr || 0));
+  return data;
+}
+
+function encodeData(data) {
+  return LZString.compressToEncodedURIComponent(JSON.stringify(data));
+}
+
+function normalizeGPTOutput(data) {
+  if (data.analyse) return data; // already correct format
+
+  // Support both wrapper format (data.profilanalyse) and flat format (direct keys)
+  const p = data.profilanalyse || data;
+
+  const analyse = [];
+
+  // Nr 1: 3-Sekunden-Entscheidung
+  const s1 = p['3_sekunden_entscheidung'] || p['3sekundenentscheidung'];
+  if (s1) {
+    analyse.push({ nr:1, titel:'3-Sekunden-Entscheidung',
+      ergebnis: s1.entscheidung || s1.ergebnis || '',
+      gruende: s1.gruende || [],
+      gedanke: s1.gedanke_besucherin || s1.gedanke || '',
+      schwachpunkt: s1.schwachpunkt || ''
+    });
+  }
+
+  // Nr 2: Profil-Filter
+  const pf = p.profil_filter || p.profilfilter;
+  if (pf) {
+    analyse.push({ nr:2, titel:'Profil-Filter',
+      satz: typeof pf === 'string' ? pf : (pf.satz || ''),
+      anwendung: (typeof pf === 'object' ? pf.anwendung : null) || []
+    });
+  }
+
+  // Nr 3: Profilname
+  const pnAnalyse = p.profilnamen_analyse || p.profilname_analyse;
+  const varianten = (pnAnalyse && pnAnalyse.varianten) || p.profilnamen_varianten || p.profilname_varianten || [];
+  const pnCheck = p.profilnamencheck || p.profilname_check;
+  if (varianten.length || pnCheck || pnAnalyse) {
+    const n = pnAnalyse || pnCheck || {};
+    analyse.push({ nr:3, titel:'Profilname',
+      inhalt: n.bewertung || n.inhalt || p.accountname_bewertung || '',
+      seo_keywords: n.seo_keywords || [],
+      empfehlung: varianten[0] || n.empfehlung || '',
+      alternativen: varianten.length > 1 ? varianten.slice(1) : (n.alternativen || [])
+    });
+  }
+
+  // Nr 4: Bio
+  const bioStr = p.bio_empfohlen;
+  const bioVarianten = p.bio_varianten || p.bios || [];
+  if (bioStr || bioVarianten.length) {
+    let bios = bioVarianten.map(b => ({
+      stil: b.typ || b.stil || '',
+      text: b.text || '',
+      zeichen: b.zeichen || (b.text||'').length,
+      begruendung: b.begruendung || b.wirkprinzip || '',
+      empfohlen: b.empfohlen || false
+    }));
+    if (bioStr && bios.length === 0) {
+      bios = [{ stil: 'empfohlen', text: bioStr, zeichen: bioStr.length, begruendung: '', empfohlen: true }];
+    }
+    analyse.push({ nr:4, titel:'Bio', inhalt: p.bio_diagnose || '', bios });
+  }
+
+  // Nr 5: Profilbild
+  if (p.profilbild) {
+    const pb = p.profilbild;
+    analyse.push({ nr:5, titel:'Profilbild',
+      inhalt: pb.bewertung || pb.inhalt || '',
+      empfehlung: Array.isArray(pb.empfehlungen) ? pb.empfehlungen.join(' · ') : (pb.empfehlung||'')
+    });
+  }
+
+  // Nr 6: Highlights
+  const hlRaw = p.highlight_struktur || p.highlights;
+  if (hlRaw) {
+    let highlights = [];
+    if (Array.isArray(hlRaw)) {
+      highlights = hlRaw.map(h => typeof h==='string'
+        ? { titel:h, beschreibung:'', punkte:[] }
+        : { titel: h.titel||'', beschreibung: h.beschreibung||'', punkte: h.punkte||[] });
+    } else {
+      const inner = hlRaw.empfohlen || hlRaw.highlights || hlRaw;
+      highlights = Array.isArray(inner) ? inner.map(h => typeof h==='string'
+        ? { titel:h, beschreibung:'', punkte:[] }
+        : { titel: h.titel||'', beschreibung: h.beschreibung||'', punkte: h.punkte||[] }) : [];
+    }
+    analyse.push({ nr:6, titel:'Highlights', inhalt: (typeof hlRaw==='object' && hlRaw.inhalt) || '', highlights });
+  }
+
+  // Nr 7: Feed & Pin-Posts
+  const feed = p.feed_pinposts || p.pinposts || p.feed;
+  if (feed) {
+    analyse.push({ nr:7, titel:'Feed & Pin-Posts',
+      inhalt: feed.inhalt || feed.diagnose || '',
+      pinposts: feed.pinposts || feed.posts || []
+    });
+  }
+
+  // Nr 9: Content-Säulen
+  const saeulenRaw = p.content_saeulen || p.contentsaeulen;
+  if (saeulenRaw) {
+    const saeulen = saeulenRaw.map(s => ({
+      titel: s.titel||'', beschreibung: s.beschreibung||'', ideen: s.ideen||[]
+    }));
+    analyse.push({ nr:9, titel:'Content-Säulen', inhalt:'', saeulen });
+  }
+
+  // Nr 10: Hook-Bibliothek
+  const hb = p.hooks || p.hook_bibliothek;
+  if (hb) {
+    let kategorien = [];
+    if (Array.isArray(hb.kategorien)) {
+      kategorien = hb.kategorien;
+    } else if (typeof hb === 'object') {
+      const catMap = { community:'Community', trust:'Trust', sales:'Sales', viral:'Viral', provokation:'Provokation' };
+      kategorien = Object.entries(catMap)
+        .filter(([key]) => hb[key])
+        .map(([key, label]) => ({
+          kategorie: label, ziel: '',
+          hooks: (hb[key]||[]).map(h => ({ hook: h }))
+        }));
+    }
+    analyse.push({ nr:10, titel:'Hook-Bibliothek', inhalt: hb.inhalt||'', kategorien });
+  }
+
+  // Nr 11: To-dos
+  const todos = p.todo_priorisiert || p.todos;
+  if (todos) {
+    analyse.push({ nr:11, titel:'Deine nächsten Schritte', todos: Array.isArray(todos) ? todos : [] });
+  }
+
+  // Nr 12: Wunschkundin-Profil
+  const wkRaw = p.wunschkundin_profil || p.wunschkundin;
+  if (wkRaw && typeof wkRaw === 'object' && (wkRaw.name || wkRaw.alltag)) {
+    analyse.push({ nr:12, titel:'Deine Wunschkundin',
+      name: wkRaw.name || '',
+      alter: wkRaw.alter || '',
+      beruf: wkRaw.beruf || '',
+      alltag: wkRaw.alltag || '',
+      momente: wkRaw.momente || [],
+      gefuehl: wkRaw.gefuehl || wkRaw.gefuehle || '',
+      gedanken: Array.isArray(wkRaw.gedanken) ? wkRaw.gedanken : (wkRaw.gedanke ? [wkRaw.gedanke] : []),
+      schmerz: wkRaw.schmerz || ''
+    });
+  }
+
+  // Nr 13: Abschluss-Einordnung
+  const abschluss = p.abschluss || p.abschluss_einordnung;
+  if (abschluss) {
+    analyse.push({ nr:13, titel:'Einordnung: Dein Profil im Gesamtsystem',
+      inhalt: abschluss.inhalt || abschluss.einleitung || '',
+      bausteine: abschluss.bausteine || []
+    });
+  }
+
+  // Also handle bio_aktuell in nr 4
+  const nr4 = analyse.find(a => a.nr === 4);
+  if (nr4 && (p.bio_aktuell || p.bio_current)) {
+    nr4.bio_aktuell = p.bio_aktuell || p.bio_current;
+  }
+
+  // Handle wunschkundin in profil_filter (nr 2)
+  const nr2 = analyse.find(a => a.nr === 2);
+  if (nr2 && typeof pf === 'object' && pf.wunschkundin) {
+    nr2.wunschkundin = pf.wunschkundin;
+  }
+
+  const vorname = (p.profilname||'').split('|')[0].trim().split(' ')[0];
+  return {
+    meta: { vorname, profil: p.profil||p.accountname||'', nische: p.nische||'', datum: new Date().toISOString().slice(0,10) },
+    einstieg: p.einstieg || '',
+    orientierungswoerter: p.orientierungswoerter || null,
+    analyse
+  };
+}
+
+function generateLink() {
+  let data;
+  try { data = mergeJSONParts(); } catch(e) { return; }
+
+  const farben = getFarbenData();
+  if (farben) data.farben = { ...farben, ...(data.farben || {}) };
+
+  const encoded = encodeData(data);
+  const url = BASE_URL + '#' + encoded;
+
+  document.getElementById('link-output').value = url;
+  document.getElementById('preview-link').href = url;
+  document.getElementById('result-section').style.display = 'block';
+  document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('copy-btn').textContent = 'Kopieren';
+  document.getElementById('copy-btn').classList.remove('copied');
+}
+
+function copyLink() {
+  const url = document.getElementById('link-output').value;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '✓ Kopiert';
+    btn.classList.add('copied');
+    showToast('Link kopiert!');
+    setTimeout(() => { btn.textContent = 'Kopieren'; btn.classList.remove('copied'); }, 3000);
+  }).catch(() => {
+    document.getElementById('link-output').select();
+    document.execCommand('copy');
+    showToast('Link kopiert!');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Auto-login if session still valid
+if (sessionStorage.getItem('pr_admin') === '1') {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('admin').style.display = 'block';
+}
+</script>
+</body>
+</html>
