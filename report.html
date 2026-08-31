@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil-Reset – Deine Analyse</title>
+<script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&family=Raleway:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple: #000000;
+  --purple-light: #333333;
+  --purple-dark: #1A1A1A;
+  --lavender: #F9F7F4;
+  --lavender-mid: #F0ECE6;
+  --lavender-dark: #CFC5B6;
+  --text: #000000;
+  --text-light: rgba(0,0,0,0.6);
+  --white: #FFFFFF;
+  --green: #27AE60;
+  --red: #E74C3C;
+  --orange: #FF8F0B;
+  --pink: #FF8F0B;
+  --pink-light: #FFE9D2;
+  --soft-pink: #F0C89A;
+  --beige-warm: #CFC5B6;
+  --beige-warm-light: #F0ECE6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--lavender);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(0,0,0,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 85% 85%, rgba(0,0,0,0.03) 0%, transparent 50%);
+}
+#loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+.spinner {
+  width: 48px; height: 48px;
+  border: 3px solid var(--lavender-dark);
+  border-top-color: var(--purple);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+#report { display: none; }
+.report-container { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* Header */
+.report-header { text-align: center; margin-bottom: 48px; animation: fadeUp .6s ease both; }
+.report-logo { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--purple); margin-bottom: 20px; }
+.report-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px,5vw,46px); color: var(--text); line-height: 1.2; margin-bottom: 12px; }
+.report-meta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; font-size: 13px; color: var(--text-light); margin-top: 16px; }
+.report-meta span { background: var(--white); border-radius: 20px; padding: 5px 14px; border: 1px solid var(--lavender-dark); }
+
+/* Cards */
+.card { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-radius: 20px; border: 1px solid var(--lavender-dark); box-shadow: 0 4px 24px rgba(0,0,0,0.07); padding: 28px; margin-bottom: 24px; animation: fadeUp .5s ease both; }
+.section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+.section-nr { width: 36px; height: 36px; background: var(--purple); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.section-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); flex: 1; }
+.score-badge { border-radius: 20px; padding: 4px 14px; font-size: 13px; font-weight: 700; }
+.score-badge.high { background: rgba(39,174,96,0.12); color: #1a7a42; }
+.score-badge.mid { background: rgba(230,126,34,0.12); color: #9a5010; }
+.score-badge.low { background: rgba(231,76,60,0.12); color: #a0392d; }
+
+/* Einstieg */
+.einstieg-section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--purple); text-align: center; margin-bottom: 14px; }
+.einstieg-split {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 28px;
+  animation: fadeUp .5s ease .1s both;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+}
+@media (max-width: 640px) { .einstieg-split { grid-template-columns: 1fr; } .einstieg-img-col { display: none; } }
+.einstieg-img-col { position: relative; min-height: 360px; }
+.einstieg-img-col img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.einstieg-content-col {
+  background: linear-gradient(145deg, #000000 0%, #2B2B2B 100%);
+  padding: 44px 40px 40px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.einstieg-greeting { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: white; margin-bottom: 22px; }
+.einstieg-body { font-size: 15px; line-height: 1.85; color: rgba(255,255,255,0.92); font-weight: 300; }
+.einstieg-body p { margin-bottom: 16px; }
+.einstieg-body p:last-child { margin-bottom: 0; }
+.einstieg-sign { font-family: 'Playfair Display', serif; font-size: 18px; color: rgba(255,255,255,0.9); margin-top: 28px; }
+
+/* Orientierungswörter */
+.worte-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.wort-chip { background: var(--lavender-mid); color: var(--purple-dark); border-radius: 30px; padding: 7px 16px; font-size: 14px; font-weight: 600; border: 1px solid var(--lavender-dark); }
+
+/* Score Dashboard */
+.score-dashboard { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 12px; margin-bottom: 32px; }
+.score-card { background: var(--white); border-radius: 14px; padding: 14px; text-align: center; border: 1px solid var(--lavender-dark); }
+.score-card-nr { font-size: 11px; color: var(--text-light); font-weight: 600; margin-bottom: 4px; }
+.score-card-title { font-size: 11px; color: var(--text); font-weight: 600; margin-bottom: 10px; line-height: 1.3; min-height: 28px; display: flex; align-items: center; justify-content: center; }
+.score-circle { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; margin: 0 auto; }
+.score-high { background: rgba(39,174,96,0.12); color: #1a7a42; }
+.score-mid { background: rgba(230,126,34,0.12); color: #9a5010; }
+.score-low { background: rgba(231,76,60,0.12); color: #a0392d; }
+
+/* Section 1 */
+.verdict-badge { display: inline-block; font-size: 20px; font-weight: 800; letter-spacing: .1em; padding: 10px 28px; border-radius: 40px; margin-bottom: 20px; }
+.verdict-bleiben { background: rgba(39,174,96,0.12); color: #1a7a42; }
+.verdict-gehen { background: rgba(231,76,60,0.12); color: #a0392d; }
+.gruende-list { list-style: none; }
+.gruende-list li { padding: 10px 0; border-bottom: 1px solid var(--lavender-mid); display: flex; gap: 10px; font-size: 15px; line-height: 1.5; }
+.gruende-list li:last-child { border-bottom: none; }
+.check-icon { font-weight: 700; flex-shrink: 0; }
+.gedanke-box { background: var(--lavender-mid); border-radius: 12px; padding: 16px 20px; font-style: italic; font-family: 'Playfair Display', serif; font-size: 16px; border-left: 4px solid var(--purple); margin-top: 16px; }
+.schwachpunkt-box { background: rgba(231,76,60,0.06); border: 1px solid rgba(231,76,60,0.2); border-radius: 12px; padding: 14px 18px; font-size: 14px; color: #7a3030; margin-top: 12px; }
+.schwachpunkt-label { font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #a0392d; margin-bottom: 4px; }
+
+/* Section 2 */
+.filter-satz { font-family: 'Playfair Display', serif; font-size: 19px; line-height: 1.65; color: var(--text); background: var(--lavender-mid); border-radius: 14px; padding: 20px 24px; border-left: 4px solid var(--purple); margin-bottom: 20px; font-style: italic; }
+.anwendung-list { list-style: none; }
+.anwendung-list li { padding: 10px 0; border-bottom: 1px solid var(--lavender-mid); display: flex; gap: 10px; font-size: 14px; line-height: 1.5; }
+.anwendung-list li:last-child { border-bottom: none; }
+.anwendung-list li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+/* Section 3 */
+.name-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0 16px; }
+.name-box { border-radius: 12px; padding: 16px; border: 1px solid var(--lavender-dark); }
+.name-box-current { background: rgba(231,76,60,0.04); border-color: rgba(231,76,60,0.2); }
+.name-box-new { background: rgba(39,174,96,0.06); border-color: rgba(39,174,96,0.25); }
+.name-box-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-light); margin-bottom: 8px; }
+.name-box-value { font-size: 17px; font-weight: 700; }
+.name-box-current .name-box-value { color: var(--text-light); }
+.name-box-new .name-box-value { color: #1a7a42; }
+.alt-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.alt-chip { background: var(--lavender-mid); border: 1px solid var(--lavender-dark); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600; color: var(--purple-dark); }
+
+/* Section 4 – Bios */
+.bio-cards { display: flex; flex-direction: column; gap: 16px; }
+.bio-card { background: var(--white); border-radius: 16px; border: 1px solid var(--lavender-dark); padding: 20px; position: relative; overflow: hidden; }
+.bio-card.empfohlen { border-color: var(--purple); box-shadow: 0 0 0 2px rgba(0,0,0,0.15); }
+.bio-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--lavender-dark); border-radius: 4px 0 0 4px; }
+.bio-card.empfohlen::before { background: var(--purple); }
+.bio-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; flex-wrap: wrap; }
+.bio-stil-badge { background: var(--lavender-mid); color: var(--purple-dark); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; border: 1px solid var(--lavender-dark); }
+.empfohlen-star { background: rgba(0,0,0,0.08); color: var(--purple); border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 700; }
+.bio-text { font-size: 15px; line-height: 1.9; white-space: pre-line; background: var(--lavender); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid var(--lavender-mid); }
+.char-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-light); margin-bottom: 6px; }
+.char-ok { color: var(--green); font-weight: 700; }
+.char-warn { color: var(--orange); font-weight: 700; }
+.char-bar { height: 4px; background: var(--lavender-mid); border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+.char-fill { height: 100%; border-radius: 10px; }
+.bio-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.bio-copy-btn { background: none; border: 1.5px solid var(--lavender-dark); color: var(--purple); border-radius: 8px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+.bio-copy-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+.begruendung-toggle { font-size: 13px; color: var(--purple); font-weight: 600; cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0; }
+.begruendung-text { display: none; margin-top: 10px; font-size: 13px; color: var(--text-light); line-height: 1.6; background: rgba(0,0,0,0.04); border-radius: 9px; padding: 12px 14px; border-left: 3px solid rgba(0,0,0,0.18); }
+.begruendung-text.open { display: block; }
+
+/* Section 6 – Highlights */
+.highlights-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 14px; }
+.highlight-card { background: var(--white); border-radius: 14px; border: 1px solid var(--lavender-dark); padding: 18px; }
+.highlight-title { font-weight: 700; font-size: 15px; color: var(--purple-dark); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--lavender-mid); }
+.highlight-punkte { list-style: none; }
+.highlight-punkte li { font-size: 13px; padding: 5px 0; display: flex; gap: 8px; line-height: 1.4; }
+.highlight-punkte li::before { content: '›'; color: var(--purple); font-weight: 700; flex-shrink: 0; }
+
+/* Section 7 – Pin-Posts */
+.pinposts-list { display: flex; flex-direction: column; gap: 16px; }
+.pinpost-card { background: var(--white); border-radius: 16px; border: 1px solid var(--lavender-dark); padding: 20px 20px 20px 56px; position: relative; }
+.pinpost-nr { position: absolute; left: 16px; top: 20px; width: 28px; height: 28px; background: var(--purple); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+.pinpost-tags { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.pinpost-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border-radius: 20px; padding: 3px 10px; border: 1px solid; }
+.tag-trust { color: #1a5a7a; background: rgba(26,90,122,0.08); border-color: rgba(26,90,122,0.2); }
+.tag-community { color: #5a2a7a; background: rgba(90,42,122,0.08); border-color: rgba(90,42,122,0.2); }
+.tag-sales { color: #1a7a42; background: rgba(26,122,66,0.08); border-color: rgba(26,122,66,0.2); }
+.tag-format { color: var(--text-light); background: var(--lavender); border-color: var(--lavender-dark); }
+.pinpost-hook { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--text); font-weight: 700; margin-bottom: 14px; line-height: 1.4; }
+.pinpost-row { margin-bottom: 8px; }
+.pinpost-row:last-child { margin-bottom: 0; }
+.pinpost-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-light); margin-bottom: 3px; }
+.pinpost-value { font-size: 14px; line-height: 1.5; }
+
+/* Section 8 – Story */
+.leitlinien-list { list-style: none; margin-top: 12px; }
+.leitlinien-list li { padding: 10px 0; border-bottom: 1px solid var(--lavender-mid); display: flex; gap: 10px; font-size: 14px; line-height: 1.5; }
+.leitlinien-list li:last-child { border-bottom: none; }
+.leitlinien-list li::before { content: '→'; color: var(--purple); font-weight: 700; flex-shrink: 0; }
+
+/* Section 9 – Content-Säulen */
+.saeulen-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 14px; }
+.saeule-card { background: var(--white); border-radius: 14px; border: 1px solid var(--lavender-dark); padding: 20px; }
+.saeule-card:nth-child(1) { border-top: 4px solid var(--purple); }
+.saeule-card:nth-child(2) { border-top: 4px solid var(--pink); }
+.saeule-card:nth-child(3) { border-top: 4px solid var(--beige-warm); }
+.saeule-title { font-weight: 700; font-size: 16px; color: var(--purple-dark); margin-bottom: 8px; }
+.saeule-beschreibung { font-size: 13px; color: var(--text-light); line-height: 1.5; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--lavender-mid); }
+.saeule-ideen { list-style: none; }
+.saeule-ideen li { font-size: 13px; padding: 5px 0; display: flex; gap: 8px; line-height: 1.4; }
+.saeule-ideen li::before { content: '✦'; color: var(--purple); font-size: 10px; flex-shrink: 0; margin-top: 3px; }
+.saeule-icon { font-size: 22px; margin-bottom: 10px; }
+
+/* Section 10 – Hook-Bibliothek Accordion */
+.hook-accordion-wrapper { display: flex; flex-direction: column; gap: 12px; }
+.hook-accordion-section { border-radius: 16px; overflow: hidden; border: 1px solid var(--lavender-dark); }
+.hook-accordion-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; user-select: none; }
+.hook-accordion-title { font-size: 18px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: white; }
+.hook-accordion-sub { font-size: 12px; color: rgba(255,255,255,0.78); margin-top: 3px; font-weight: 400; }
+.hook-accordion-right { display: flex; align-items: center; gap: 14px; }
+.hook-accordion-count { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6); }
+.hook-accordion-arrow { font-size: 18px; color: rgba(255,255,255,0.8); transition: transform .3s ease; }
+.hook-accordion-arrow.open { transform: rotate(180deg); }
+.hook-accordion-body { display: none; background: var(--white); padding: 14px 16px; }
+.hook-accordion-body.open { display: block; }
+.hook-lib-item { border: 1px solid var(--lavender-mid); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.hook-lib-item:last-child { margin-bottom: 0; }
+.hook-lib-template { font-size: 14px; font-weight: 700; padding: 12px 14px; background: var(--lavender); border-bottom: 1px solid var(--lavender-mid); color: var(--text); line-height: 1.4; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.hook-lib-template-text { flex: 1; }
+.hook-lib-examples { padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; background: var(--white); }
+.hook-lib-example { font-size: 13px; color: var(--text-light); line-height: 1.5; padding: 7px 11px; background: var(--lavender-mid); border-radius: 8px; }
+.hook-copy { background: none; border: 1px solid var(--lavender-dark); color: var(--purple); border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 600; cursor: pointer; flex-shrink: 0; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+.hook-copy:hover { background: var(--purple); color: white; border-color: var(--purple); }
+
+/* Quick Win Content (nach Hook-Bibliothek) */
+.prompt-card { background: var(--white); border-radius: 16px; border: 1px solid var(--lavender-dark); padding: 18px 20px; margin-bottom: 14px; }
+.prompt-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.prompt-card-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.prompt-card-sub { display: block; font-size: 12px; font-weight: 400; color: var(--text-light); margin-top: 2px; }
+.prompt-card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.prompt-action-btn { background: none; border: 1.5px solid var(--lavender-dark); color: var(--purple); border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; white-space: nowrap; }
+.prompt-action-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+.prompt-card-text { white-space: pre-wrap; font-size: 13px; line-height: 1.65; color: var(--text); background: var(--lavender-mid); border-radius: 10px; padding: 14px 16px; max-height: 420px; overflow-y: auto; }
+.quickwin-generator-box { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); border-radius: 16px; padding: 22px 24px; margin-top: 18px; color: white; }
+.quickwin-generator-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; opacity: .7; margin-bottom: 8px; }
+.quickwin-generator-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+.quickwin-generator-text { font-size: 13px; line-height: 1.65; opacity: .9; margin-bottom: 16px; }
+.quickwin-generator-btn { display: inline-block; background: white; color: var(--purple); border-radius: 12px; padding: 11px 22px; font-size: 13px; font-weight: 700; text-decoration: none; }
+.quickwin-generator-btn:hover { opacity: .88; }
+.quickwin-frequency { background: var(--lavender-mid); border-radius: 12px; padding: 12px 16px; font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 20px; }
+.quickwin-frequency strong { color: var(--purple-dark); }
+/* legacy grid (kept for compatibility) */
+.hooks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.hook-item { background: var(--white); border-radius: 10px; border: 1px solid var(--lavender-dark); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.hook-text { font-size: 14px; font-weight: 600; line-height: 1.4; flex: 1; }
+
+/* Section 11 – Todos */
+.todos-list { list-style: none; }
+.todo-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--lavender-mid); }
+.todo-item:last-child { border-bottom: none; }
+.todo-nr { width: 28px; height: 28px; background: var(--purple); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.todo-text { font-size: 15px; line-height: 1.5; padding-top: 3px; }
+
+/* Farbpalette */
+.farben-palette { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 4px; }
+.swatch { text-align: center; }
+.swatch-color { width: 72px; height: 72px; border-radius: 14px; border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 8px; }
+.swatch-hex { font-size: 12px; font-weight: 700; color: var(--text); font-family: monospace; margin-bottom: 3px; }
+.swatch-label { font-size: 11px; color: var(--text-light); }
+.farben-font { display: flex; align-items: center; gap: 12px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--lavender-mid); }
+.farben-font-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-light); }
+.farben-font-name { font-size: 20px; font-weight: 600; color: var(--text); }
+
+/* Karussell */
+.karussell-section { margin-bottom: 24px; }
+.karussell-section-header { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text); margin-bottom: 20px; }
+.karussell-posts { display: flex; flex-direction: column; gap: 28px; }
+.karussell-post { background: rgba(255,255,255,0.85); border-radius: 20px; border: 1px solid var(--lavender-dark); box-shadow: 0 4px 24px rgba(0,0,0,0.07); padding: 24px; }
+.karussell-post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; gap: 12px; flex-wrap: wrap; }
+.karussell-post-titel { font-weight: 700; font-size: 16px; color: var(--text); }
+.karussell-dl-btn { background: var(--lavender-mid); border: 1.5px solid var(--lavender-dark); color: var(--purple-dark); border-radius: 10px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; white-space: nowrap; }
+.karussell-dl-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+.karussell-dl-btn:disabled { opacity: .6; cursor: default; }
+.karussell-viewer { display: flex; align-items: center; gap: 12px; }
+.slide-nav-btn { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--lavender-dark); background: var(--white); color: var(--purple); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s; line-height: 1; font-family: 'DM Sans', sans-serif; }
+.slide-nav-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+.slide-container { flex: 1; position: relative; border-radius: 14px; overflow: hidden; aspect-ratio: 4/5; max-width: 340px; margin: 0 auto; }
+.slide { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center; align-items: flex-start; padding: 32px 28px; box-sizing: border-box; }
+.slide.active { display: flex; }
+.slide-nr-badge { position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 700; opacity: .5; }
+.slide-edit-hint { position: absolute; top: 16px; left: 16px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; opacity: .6; background: rgba(255,255,255,0.15); border-radius: 6px; padding: 3px 8px; }
+.slide-content { width: 100%; }
+.slide-text-gross { font-size: clamp(22px,4vw,32px); font-weight: 700; line-height: 1.25; margin-bottom: 16px; outline: none; min-height: 40px; cursor: text; }
+.slide-text-gross:focus { opacity: .9; }
+.slide-text-klein { font-size: clamp(14px,2vw,18px); font-weight: 400; line-height: 1.55; opacity: .8; outline: none; min-height: 20px; cursor: text; }
+.slide-dots { display: flex; justify-content: center; gap: 7px; margin-top: 14px; }
+.slide-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lavender-dark); cursor: pointer; transition: all .15s; }
+.slide-dot.active { background: var(--purple); width: 22px; border-radius: 4px; }
+
+/* PDF section */
+.pdf-section { background: var(--white); border: 1px solid var(--lavender-dark); border-radius: 20px; padding: 24px 28px; margin-top: 32px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.pdf-section-icon { font-size: 32px; flex-shrink: 0; }
+.pdf-section-text { flex: 1; min-width: 200px; }
+.pdf-section-title { font-weight: 700; font-size: 16px; color: var(--text); margin-bottom: 5px; }
+.pdf-section-sub { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+.pdf-section-btn { background: var(--lavender-mid); border: 1.5px solid var(--lavender-dark); color: var(--purple-dark); border-radius: 12px; padding: 12px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; flex-shrink: 0; white-space: nowrap; }
+.pdf-section-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+
+/* Pitch */
+.pitch-section { background: linear-gradient(135deg, var(--pink) 0%, #A0305A 100%); border-radius: 24px; padding: 44px 36px; text-align: center; margin-top: 20px; color: white; }
+.pitch-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .65; margin-bottom: 16px; }
+.pitch-section h3 { font-family: 'Playfair Display', serif; font-size: 26px; margin-bottom: 16px; line-height: 1.3; }
+.pitch-section p { font-size: 15px; opacity: .87; line-height: 1.75; margin-bottom: 28px; max-width: 520px; margin-left: auto; margin-right: auto; }
+.pitch-section p em { font-style: italic; opacity: 1; font-family: 'Playfair Display', serif; font-size: 16px; }
+.pitch-btn { display: inline-block; background: white; color: var(--purple-dark); border-radius: 14px; padding: 14px 28px; font-weight: 700; font-size: 15px; text-decoration: none; transition: transform .15s, box-shadow .15s; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.pitch-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.22); }
+
+/* Text helpers */
+.body-text { font-size: 15px; line-height: 1.7; }
+.body-text-light { font-size: 14px; line-height: 1.7; color: var(--text-light); font-style: italic; margin-bottom: 18px; }
+
+/* Toast */
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: white; padding: 12px 24px; border-radius: 40px; font-size: 14px; font-weight: 500; transition: transform .3s ease; z-index: 999; pointer-events: none; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Error */
+#error { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; padding: 40px; text-align: center; display: none; }
+
+/* SEO Keywords header */
+.seo-keywords-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.seo-keywords-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.seo-keyword-chip { background: linear-gradient(135deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.04) 100%); color: var(--purple-dark); border-radius: 30px; padding: 6px 16px; font-size: 13px; font-weight: 600; border: 1px solid rgba(0,0,0,0.15); }
+
+/* Section labels */
+.gruende-section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-light); margin-bottom: 10px; margin-top: 18px; }
+
+/* Section 2 – Persona-Strip */
+.persona-strip { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); border-radius: 16px; padding: 20px 24px; margin: 16px 0; color: white; }
+.persona-strip-name { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: white; margin-bottom: 4px; }
+.persona-strip-beruf { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
+.persona-strip-alltag { font-size: 14px; line-height: 1.65; color: rgba(255,255,255,0.88); margin-bottom: 12px; }
+.moment-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+.moment-chip { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.2); }
+.persona-strip-gedanke { font-family: 'Playfair Display', serif; font-size: 15px; font-style: italic; color: rgba(255,255,255,0.9); line-height: 1.7; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2); }
+
+/* Section 3 – Profilname variants */
+.profilname-variants { display: flex; flex-direction: column; gap: 10px; }
+.profilname-variant { display: flex; align-items: center; gap: 14px; background: var(--white); border-radius: 12px; border: 1px solid var(--lavender-dark); padding: 14px 16px; }
+.profilname-variant-best { border-color: #1a7a42; background: rgba(39,174,96,0.04); }
+.profilname-variant-nr { width: 26px; height: 26px; border-radius: 50%; background: var(--lavender-mid); color: var(--purple-dark); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.profilname-variant-best .profilname-variant-nr { background: rgba(39,174,96,0.15); color: #1a7a42; }
+.profilname-variant-text { font-size: 16px; font-weight: 700; color: var(--text); flex: 1; }
+.profilname-variant-best .profilname-variant-text { color: #1a5a30; }
+.profilname-variant-chars { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.profilname-variant-empfohlen { font-size: 11px; font-weight: 700; color: #1a7a42; background: rgba(39,174,96,0.1); border-radius: 20px; padding: 3px 10px; white-space: nowrap; }
+
+/* Section 4 – Current bio */
+.bio-aktuell-box { background: rgba(231,76,60,0.04); border: 1px solid rgba(231,76,60,0.18); border-radius: 12px; padding: 16px 18px; margin-bottom: 20px; }
+.bio-aktuell-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #a0392d; margin-bottom: 8px; }
+.bio-aktuell-text { font-size: 14px; white-space: pre-line; line-height: 1.85; color: var(--text-light); }
+
+/* Section 7 – Pin-post roles */
+.pinpost-psychologie { background: var(--lavender); border-radius: 10px; padding: 10px 14px; margin-top: 12px; font-size: 13px; color: var(--text-light); line-height: 1.55; }
+.tag-personal { color: #5a2a7a; background: rgba(90,42,122,0.08); border-color: rgba(90,42,122,0.2); }
+.tag-problem { color: #9a5010; background: rgba(154,80,16,0.08); border-color: rgba(154,80,16,0.2); }
+.tag-loesung { color: #1a7a42; background: rgba(26,122,66,0.08); border-color: rgba(26,122,66,0.2); }
+
+/* Section 9 – Säule icon */
+.saeule-icon { font-size: 22px; color: var(--purple); margin-bottom: 10px; }
+
+/* Section 10 – Hook blocks with sub-hooks */
+.hooklib-blocks { display: flex; flex-direction: column; gap: 10px; }
+.hook-block { background: var(--white); border-radius: 14px; border: 1px solid var(--lavender-dark); padding: 18px; }
+.hook-block-main { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 12px; }
+.hook-block-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 600px) { .hook-block-sub { grid-template-columns: 1fr; } }
+.hook-sub-item { background: var(--lavender); border-radius: 10px; padding: 10px 12px; }
+.hook-sub-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-light); margin-bottom: 4px; }
+.hook-sub-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+/* Section 12 – Wunschkundin-Profil */
+.wk-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.wk-avatar { width: 76px; height: 76px; border-radius: 50%; background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-family: 'Playfair Display', serif; font-weight: 700; flex-shrink: 0; overflow: hidden; border: 3px solid var(--lavender-dark); box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
+.wk-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--text); }
+.wk-meta { font-size: 13px; color: var(--text-light); margin-top: 3px; }
+.wk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+@media (max-width: 600px) { .wk-grid { grid-template-columns: 1fr; } }
+.wk-item { background: var(--white); border-radius: 14px; border: 1px solid var(--lavender-dark); padding: 16px; }
+.wk-item-full { grid-column: 1 / -1; }
+.wk-item-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--purple); margin-bottom: 8px; }
+.wk-item-text { font-size: 14px; line-height: 1.65; color: var(--text); }
+.wk-moments { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; }
+.wk-moment { font-size: 13px; color: var(--text-light); padding: 4px 0 4px 10px; border-left: 2px solid var(--purple); }
+.wk-thoughts { display: flex; flex-direction: column; gap: 8px; }
+.wk-thought { font-size: 14px; font-style: italic; font-family: 'Playfair Display', serif; color: var(--text); line-height: 1.6; background: var(--lavender-mid); border-radius: 8px; padding: 8px 12px; }
+.wk-schmerz { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); border-radius: 16px; padding: 20px 24px; }
+.wk-schmerz-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+.wk-schmerz-text { font-family: 'Playfair Display', serif; font-size: 17px; font-style: italic; color: white; line-height: 1.7; }
+
+/* Section 13 – Abschluss Bausteine */
+.bausteine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+@media (max-width: 640px) { .bausteine-grid { grid-template-columns: 1fr 1fr; } }
+.baustein-card { background: var(--white); border-radius: 14px; border: 1px solid var(--lavender-dark); padding: 18px 16px; text-align: center; position: relative; }
+.baustein-card.aktiv { border-color: var(--purple); box-shadow: 0 0 0 2px rgba(0,0,0,0.12); }
+.baustein-aktiv-check { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; background: var(--purple); color: white; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.baustein-icon { font-size: 26px; margin-bottom: 8px; }
+.baustein-titel { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.baustein-beschreibung { font-size: 11px; color: var(--text-light); line-height: 1.5; }
+
+/* Kristin Photo */
+.kristin-photo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; object-position: top; border: 3px solid var(--purple); box-shadow: 0 4px 20px rgba(0,0,0,0.2); margin-bottom: 12px; }
+
+/* New Score Dashboard */
+.score-dashboard-grid { display: grid; grid-template-columns: 150px 280px 1fr; gap: 24px; align-items: center; }
+@media (max-width: 720px) { .score-dashboard-grid { grid-template-columns: 1fr; text-align: center; } }
+.score-avg-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.score-avg-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-light); }
+.score-radar-col { display: flex; justify-content: center; padding: 10px 20px; }
+.score-list-col { display: flex; flex-direction: column; gap: 10px; }
+.score-list-item { display: flex; align-items: center; gap: 10px; }
+.score-list-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.score-list-name { font-size: 12px; color: var(--text); flex: 1; line-height: 1.3; font-weight: 500; }
+.score-list-val { font-size: 14px; font-weight: 800; flex-shrink: 0; min-width: 40px; text-align: right; }
+
+/* Hook category full headers */
+.hooklib-cat-header-full { border-radius: 14px; padding: 18px 22px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hooklib-cat-name { font-size: 20px; font-weight: 800; color: white; text-transform: uppercase; letter-spacing: .07em; }
+.hooklib-cat-ziel-full { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 3px; font-weight: 500; }
+.hooklib-cat-emoji { font-size: 32px; opacity: .85; }
+
+/* Feedback section */
+.feedback-section { background: linear-gradient(135deg, var(--lavender-mid) 0%, var(--pink-light) 100%); border-radius: 24px; padding: 36px 32px; margin-top: 20px; text-align: center; border: 1px solid var(--soft-pink); }
+.feedback-icon { font-size: 44px; margin-bottom: 14px; }
+.feedback-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 12px; line-height: 1.35; }
+.feedback-body { font-size: 15px; color: var(--text); line-height: 1.75; margin-bottom: 22px; }
+.feedback-body a { color: var(--pink); font-weight: 700; text-decoration: none; }
+.feedback-body a:hover { text-decoration: underline; }
+.feedback-questions { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; text-align: left; }
+.feedback-question { background: white; border-radius: 10px; padding: 11px 16px; font-size: 14px; font-weight: 600; color: var(--text); border-left: 3px solid var(--pink); }
+.feedback-note { font-size: 13px; color: var(--text-light); margin-bottom: 22px; line-height: 1.65; }
+.feedback-gift { background: white; border-radius: 16px; padding: 20px 24px; font-size: 14px; color: var(--text); line-height: 1.75; border: 2px dashed var(--soft-pink); }
+.feedback-gift-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--pink); margin-bottom: 8px; }
+.feedback-gift em { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--pink); font-style: italic; display: block; margin-top: 6px; }
+
+/* Instagram-style Highlights */
+.hl-circles-row { display: flex; gap: 20px; justify-content: center; padding: 16px 0 28px; flex-wrap: wrap; }
+.hl-circle-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.hl-circle { width: 68px; height: 68px; border-radius: 50%; background: linear-gradient(135deg, #833AB4 0%, #C13584 50%, #FD1D1D 75%, #F56040 100%); display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); border: 3px solid white; }
+.hl-circle-label { font-size: 11px; font-weight: 600; color: var(--text); text-align: center; max-width: 72px; line-height: 1.3; }
+
+/* Print */
+@media print {
+  body { background: white; background-image: none; }
+  .card { box-shadow: none; break-inside: avoid; }
+  .pdf-btn, .pitch-section, .hook-copy, .bio-copy-btn, .prompt-action-btn, .toast { display: none !important; }
+  .begruendung-text { display: block !important; }
+  .report-container { padding: 0; }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .name-compare { grid-template-columns: 1fr; }
+  .hooks-grid { grid-template-columns: 1fr; }
+  .score-dashboard { grid-template-columns: repeat(3,1fr); }
+  .pinpost-card { padding-left: 16px; }
+  .pinpost-nr { display: none; }
+  .einstieg-card { padding: 24px; }
+  .pitch-section { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div style="font-size:14px;color:var(--text-light)">Bericht wird geladen…</div>
+</div>
+
+<div id="error">
+  <div style="font-size:48px">⚠️</div>
+  <div style="font-family:'Playfair Display',serif;font-size:24px;color:var(--text);margin-bottom:8px">Kein Bericht gefunden</div>
+  <div style="font-size:14px;color:var(--text-light);max-width:400px;line-height:1.6">
+    Dieser Link enthält keine Analysedaten. Bitte überprüfe den Link oder kontaktiere deine Beraterin.
+  </div>
+</div>
+
+<div id="report">
+  <div class="report-container">
+    <div class="report-header">
+      <img src="kristin.png" class="kristin-photo" alt="Kristin">
+      <div class="report-logo">✦ Profil-Reset · von Kristin</div>
+      <h1 id="report-title">Deine Instagram-<br>Profil-Analyse</h1>
+      <div class="report-meta" id="report-meta"></div>
+    </div>
+
+    <div id="einstieg-section"></div>
+    <div id="orientierungswoerter-section"></div>
+    <div id="farben-section"></div>
+    <div id="score-dashboard-section"></div>
+    <div id="sections-container"></div>
+
+    <div class="pdf-section">
+      <div class="pdf-section-icon">📄</div>
+      <div class="pdf-section-text">
+        <div class="pdf-section-title">Deine Ergebnisse sichern</div>
+        <div class="pdf-section-sub">Speichere deinen Profil-Reset als PDF — so hast du alle Empfehlungen immer griffbereit und kannst Schritt für Schritt abhaken.</div>
+      </div>
+      <button class="pdf-section-btn" onclick="window.print()">Als PDF speichern</button>
+    </div>
+
+    <div class="feedback-section">
+      <div class="feedback-icon">💌</div>
+      <div class="feedback-title">Hat dir der Profil Reset<br>für dein Profil weitergeholfen?</div>
+      <div class="feedback-body">
+        Dann würde ich mich riesig über dein Feedback freuen!<br>
+        Schreib mir einfach eine kurze DM auf Instagram:<br>
+        <a href="https://instagram.com/kristin.create" target="_blank">@kristin.create</a>
+      </div>
+      <div class="feedback-questions">
+        <div class="feedback-question">✦ Was hat sich seit dem Profil Reset für dich verändert?</div>
+        <div class="feedback-question">✦ Welches konkrete Ergebnis konntest du erzielen?</div>
+      </div>
+      <div class="feedback-note">Gerne mit Screenshots — und sag mir kurz Bescheid, ob ich dein Testimonial mit anderen teilen darf oder du lieber anonym bleibst. 🤍</div>
+      <div class="feedback-gift">
+        <div class="feedback-gift-label">🎁 Kleines Dankeschön für dein Feedback</div>
+        Als Dankeschön bekommst du meinen <strong>15-seitigen Reels-Guide</strong> — darin teile ich alles, was mir geholfen hat, in kurzer Zeit <strong>über 130.000 Views und 270 neue Follower</strong> zu gewinnen. Konkrete Tipps, keine Theorie.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">Kopiert!</div>
+
+<script>
+async function decodeData(hash) {
+  try {
+    const decoded = decodeURIComponent(hash);
+    // Neues Format: Blob-URL
+    if (decoded.startsWith('http')) {
+      const res = await fetch(decoded);
+      if (!res.ok) throw new Error('Fetch fehlgeschlagen');
+      return await res.json();
+    }
+    // lz-string komprimiert
+    const decompressed = LZString.decompressFromEncodedURIComponent(hash);
+    if (decompressed) return JSON.parse(decompressed);
+    // Fallback: altes Base64-Format
+    return JSON.parse(decodeURIComponent(escape(atob(hash))));
+  } catch(e) { return null; }
+}
+
+function scoreClass(s) {
+  if (s >= 7) return 'high';
+  if (s >= 5) return 'mid';
+  return 'low';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg || 'Kopiert!';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('Kopiert!')).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Kopiert!');
+  });
+}
+
+function formatDate(d) {
+  try {
+    return new Date(d).toLocaleDateString('de-DE', { day:'2-digit', month:'long', year:'numeric' });
+  } catch(e) { return d; }
+}
+
+function renderMeta(data) {
+  const m = data.meta || {};
+  const parts = [];
+  if (m.profil) parts.push(m.profil);
+  if (m.datum) parts.push(formatDate(m.datum));
+  document.getElementById('report-meta').innerHTML = parts.map(p => `<span>${p}</span>`).join('');
+}
+
+function renderEinstieg(data) {
+  if (!data.einstieg) return;
+  const vorname = (data.meta && data.meta.vorname) || '';
+
+  const anrede = (data.meta && data.meta.geschlecht === 'm') ? 'Lieber' : 'Liebe';
+
+  // Strip leading "Liebe/Lieber X," and trailing "Deine Kristin" if GPT included them
+  let text = data.einstieg
+    .replace(/^Liebe[r]?\s+\S+[,.]?\s*/i, '')
+    .replace(/\s*Deine\s+Kristin\s*[♡❤]?\s*$/i, '')
+    .trim();
+
+  // Split into paragraphs on double newline or single newline
+  const paras = text.split(/\n\n|\n/).filter(p => p.trim());
+  const bodyHtml = paras.map(p => `<p>${p.trim()}</p>`).join('');
+
+  document.getElementById('einstieg-section').innerHTML = `
+    <div class="einstieg-section-label">Kristins persönliche Einschätzung für dich</div>
+    <div class="einstieg-split">
+      <div class="einstieg-img-col"><img src="./instagram-mockup.png" alt="Instagram Profil Mockup" style="object-position:top;object-fit:cover;width:100%;height:100%"></div>
+      <div class="einstieg-content-col">
+        <div class="einstieg-greeting">${anrede} ${vorname},</div>
+        <div class="einstieg-body">${bodyHtml}</div>
+        <div class="einstieg-sign">Deine Kristin ♡</div>
+      </div>
+    </div>`;
+}
+
+function renderOrientierungswoerter(data) {
+  if (!data.orientierungswoerter) return;
+  const ow = data.orientierungswoerter;
+  const worte = (ow.woerter || []).map(w => `<span class="seo-keyword-chip">${w}</span>`).join('');
+  const statusMap = {
+    'stark':    { color: '#00C853', bg: 'rgba(0,200,83,0.08)',   border: 'rgba(0,200,83,0.25)',   label: '✓ Stark & konsistent' },
+    'gemischt': { color: '#FF6D00', bg: 'rgba(255,109,0,0.08)',  border: 'rgba(255,109,0,0.25)',  label: '◑ Gemischt' },
+    'unklar':   { color: '#FF1744', bg: 'rgba(255,23,68,0.08)',  border: 'rgba(255,23,68,0.25)',  label: '✗ Kein roter Faden' }
+  };
+  const s = statusMap[(ow.status||'').toLowerCase()] || statusMap['gemischt'];
+  const statusBadge = ow.status ? `<span style="background:${s.bg};color:${s.color};border:1px solid ${s.border};border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700">${s.label}</span>` : '';
+  const takeawayHtml = ow.takeaway ? `<div style="margin-top:14px;background:rgba(0,0,0,0.05);border-left:3px solid var(--purple);border-radius:0 10px 10px 0;padding:12px 16px;font-size:13px;font-weight:600;color:var(--text);line-height:1.6">→ ${ow.takeaway}</div>` : '';
+  document.getElementById('orientierungswoerter-section').innerHTML = `
+    <div class="card" style="animation-delay:.1s">
+      <div class="seo-keywords-header">
+        <span class="seo-keywords-icon">🔍</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">So wirkt dein Profil auf Besucher</div>
+          <div style="font-size:12px;color:var(--text-light);margin-top:2px">Diese Signale sendet dein Profil – bewusst oder nicht</div>
+        </div>
+        ${statusBadge}
+      </div>
+      <div class="worte-grid">${worte}</div>
+      ${ow.erklaerung ? `<div style="font-size:13px;color:var(--text-light);line-height:1.65;margin-top:10px;padding-top:10px;border-top:1px solid var(--lavender-mid)">${ow.erklaerung}</div>` : ''}
+      ${takeawayHtml}
+    </div>`;
+}
+
+const strongColors = { high: '#00C853', mid: '#FF6D00', low: '#FF1744' };
+const radarLabels = {
+  '3-Sekunden-Entscheidung':'3-Sek.', 'Profil-Filter':'Filter',
+  'Profilname':'Name', 'Bio':'Bio', 'Profilbild':'Foto',
+  'Highlights':'HL', 'Feed & Pin-Posts':'Feed',
+  'Story-Check':'Story', 'Content-Säulen':'Content'
+};
+
+function renderRadarChart(scored) {
+  if (scored.length < 3) return '';
+  const cx = 140, cy = 140, maxR = 90;
+  const n = scored.length;
+  const ang = i => (i / n) * 2 * Math.PI - Math.PI / 2;
+  const px = (i, r) => (cx + r * Math.cos(ang(i))).toFixed(1);
+  const py = (i, r) => (cy + r * Math.sin(ang(i))).toFixed(1);
+
+  const grid = [2,4,6,8,10].map(v => {
+    const pts = Array.from({length:n},(_,i)=>`${px(i,(v/10)*maxR)},${py(i,(v/10)*maxR)}`).join(' ');
+    return `<polygon points="${pts}" fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>`;
+  }).join('');
+
+  const axes = Array.from({length:n},(_,i)=>
+    `<line x1="${cx}" y1="${cy}" x2="${px(i,maxR)}" y2="${py(i,maxR)}" stroke="rgba(0,0,0,0.15)" stroke-width="1"/>`
+  ).join('');
+
+  const dataPts = scored.map((s,i)=>`${px(i,(s.score/10)*maxR)},${py(i,(s.score/10)*maxR)}`).join(' ');
+  const poly = `<polygon points="${dataPts}" fill="rgba(0,0,0,0.12)" stroke="#000000" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+  const dots = scored.map((s,i)=>{
+    const r=(s.score/10)*maxR;
+    return `<circle cx="${px(i,r)}" cy="${py(i,r)}" r="5" fill="${strongColors[scoreClass(s.score)]}" stroke="white" stroke-width="2"/>`;
+  }).join('');
+
+  const labels = scored.map((s,i)=>{
+    const lr = maxR + 24;
+    const x = parseFloat(px(i,lr)), y = parseFloat(py(i,lr));
+    const anchor = x < cx-15 ? 'end' : x > cx+15 ? 'start' : 'middle';
+    const baseline = y < cy-15 ? 'auto' : y > cy+15 ? 'hanging' : 'central';
+    const lbl = radarLabels[s.titel] || s.titel.substring(0,6);
+    return `<text x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="${baseline}" font-size="10" font-weight="700" fill="rgba(0,0,0,0.6)">${lbl}</text>`;
+  }).join('');
+
+  return `<svg width="280" height="280" viewBox="0 0 280 280" style="overflow:visible">${grid}${axes}${poly}${dots}${labels}</svg>`;
+}
+
+function renderAvgRing(avg, cls) {
+  const radius = 52, circ = 2 * Math.PI * radius;
+  const offset = circ - (avg / 10) * circ;
+  const color = strongColors[cls] || strongColors.mid;
+  const label = avg >= 7 ? 'Gut aufgestellt' : avg >= 5 ? 'Luft nach oben' : 'Akuter Handlungsbedarf';
+  return `<svg width="140" height="150" viewBox="0 0 140 150">
+    <circle cx="70" cy="70" r="${radius}" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="8"/>
+    <circle cx="70" cy="70" r="${radius}" fill="none" stroke="${color}" stroke-width="8"
+      stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+      stroke-linecap="round" transform="rotate(-90 70 70)"/>
+    <text x="70" y="64" text-anchor="middle" dominant-baseline="central" font-size="30" font-weight="800" fill="${color}">${avg.toFixed(1)}</text>
+    <text x="70" y="88" text-anchor="middle" font-size="11" fill="rgba(0,0,0,0.45)">von 10</text>
+    <text x="70" y="118" text-anchor="middle" font-size="10" font-weight="700" fill="${color}">${label}</text>
+  </svg>`;
+}
+
+function renderScoreRing(score, cls) {
+  const radius = 18;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 10) * circumference;
+  const colors = { high: '#27AE60', mid: '#E67E22', low: '#E74C3C' };
+  const color = colors[cls] || colors.mid;
+  return `<svg width="52" height="52" viewBox="0 0 52 52">
+    <circle cx="26" cy="26" r="${radius}" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="4"/>
+    <circle cx="26" cy="26" r="${radius}" fill="none" stroke="${color}" stroke-width="4"
+      stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+      stroke-linecap="round" transform="rotate(-90 26 26)"/>
+    <text x="26" y="26" text-anchor="middle" dominant-baseline="central"
+      font-size="14" font-weight="700" fill="${color}">${score}</text>
+  </svg>`;
+}
+
+function renderScoreDashboard(data) {
+  const scored = (data.analyse || []).filter(a => a.score && a.nr >= 1 && a.nr <= 9);
+  if (!scored.length) return;
+  const avg = scored.reduce((s,a) => s + a.score, 0) / scored.length;
+  const avgCls = scoreClass(Math.round(avg));
+
+  const listHtml = scored.map(a => {
+    const color = strongColors[scoreClass(a.score)];
+    return `<div class="score-list-item">
+      <div class="score-list-dot" style="background:${color}"></div>
+      <div class="score-list-name">Punkt ${a.nr} · ${a.titel}</div>
+      <div class="score-list-val" style="color:${color}">${a.score}/10</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('score-dashboard-section').innerHTML = `
+    <div class="card" style="animation-delay:.12s">
+      <div class="section-header" style="margin-bottom:6px">
+        <div class="section-nr" style="background:var(--purple)">★</div>
+        <div class="section-title">Dein Gesamt-Score</div>
+      </div>
+      <div style="font-size:13px;color:var(--text-light);line-height:1.65;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--lavender-mid)">Hier siehst du auf einen Blick wie gut dein Profil insgesamt aufgestellt ist. Der Durchschnittswert fasst alle 9 bewerteten Bereiche zusammen — je höher, desto klarer und überzeugender wirkt dein Profil auf neue Besucherinnen.</div>
+      <div class="score-dashboard-grid">
+        <div class="score-avg-col">
+          <div class="score-avg-label">Gesamt-Score</div>
+          ${renderAvgRing(avg, avgCls)}
+        </div>
+        <div class="score-radar-col">${renderRadarChart(scored)}</div>
+        <div class="score-list-col">${listHtml}</div>
+      </div>
+    </div>`;
+}
+
+function renderSection1(item) {
+  const ergebnis = item.ergebnis || item.verdict || '';
+  const isBleiben = ergebnis.toLowerCase().includes('bleiben');
+  const verdictColor = isBleiben ? 'var(--green)' : 'var(--red)';
+  const checkSymbol = isBleiben ? '✓' : '×';
+  const gruende = (item.gruende || []).map(g =>
+    `<li><span class="check-icon" style="color:${verdictColor}">${checkSymbol}</span>${g}</li>`
+  ).join('');
+  return `
+    ${ergebnis ? `<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+      <div class="verdict-badge verdict-${isBleiben?'bleiben':'gehen'}">${ergebnis.toUpperCase()}</div>
+      <div style="font-size:14px;color:var(--text-light)">Das Urteil nach 3 Sekunden</div>
+    </div>` : ''}
+    ${item.inhalt && !gruende ? `<div class="body-text" style="margin-bottom:16px">${item.inhalt}</div>` : ''}
+    ${gruende ? `<div class="gruende-section-label" style="margin-top:0">Die Gründe im Detail</div><ul class="gruende-list" style="margin-bottom:0">${gruende}</ul>` : ''}
+    ${item.gedanke ? `<div class="gedanke-box">"${item.gedanke}"</div>` : ''}
+    ${item.schwachpunkt ? `<div class="schwachpunkt-box"><div class="schwachpunkt-label">Größter Hebel jetzt</div>${item.schwachpunkt}</div>` : ''}`;
+}
+
+function renderSection2(item) {
+  const pf = item.profil_filter || {};
+  const satz = item.satz || pf.satz || item.inhalt || '';
+  const anw = (item.anwendung || pf.anwendung || []).map(a => `<li>${a}</li>`).join('');
+  const wk = item.wunschkundin || pf.wunschkundin;
+  let personaHtml = '';
+  if (wk) {
+    const momente = (wk.momente || []).map(m => `<span class="moment-chip">${m}</span>`).join('');
+    personaHtml = `<div class="persona-strip">
+      <div class="persona-strip-name">${wk.name || 'Deine Wunschkundin'}</div>
+      ${wk.beruf ? `<div class="persona-strip-beruf">${wk.beruf}</div>` : ''}
+      ${wk.alltag ? `<div class="persona-strip-alltag">${wk.alltag}</div>` : ''}
+      ${momente ? `<div class="moment-chips">${momente}</div>` : ''}
+      ${wk.gedanke ? `<div class="persona-strip-gedanke">"${wk.gedanke}"</div>` : ''}
+    </div>`;
+  }
+  return `
+    ${satz ? `<div style="margin-bottom:${personaHtml||anw?'4':'0'}px">
+      <div class="gruende-section-label" style="margin-top:0">Dein Content-Filter</div>
+      <div class="filter-satz">"${satz}"</div>
+    </div>` : ''}
+    ${personaHtml}
+    ${anw ? `<div class="gruende-section-label">So wendest du ihn an</div><ul class="anwendung-list">${anw}</ul>` : ''}`;
+}
+
+function renderSection3(item) {
+  const alts = (item.alternativen || []);
+  const keywords = (item.seo_keywords || []).map(k =>
+    `<span style="display:inline-block;background:rgba(0,0,0,0.07);border:1px solid rgba(0,0,0,0.18);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;color:var(--purple);margin:3px 3px 3px 0">${k}</span>`
+  ).join('');
+  const allVariants = [item.empfehlung, ...alts].filter(Boolean);
+  const variantsHtml = allVariants.map((v, i) => `
+    <div class="profilname-variant${i===0?' profilname-variant-best':''}">
+      <div class="profilname-variant-nr">${i+1}</div>
+      <div style="flex:1">
+        <div class="profilname-variant-text">${v}</div>
+        <div class="profilname-variant-chars" style="color:${v.length>60?'#e53935':'inherit'}">${v.length} / 60 Zeichen${v.length>60?' ⚠':''}${ v.length<=60?' ✓':''}</div>
+      </div>
+      ${i===0 ? '<span class="profilname-variant-empfohlen">✓ Empfohlen</span>' : ''}
+    </div>`).join('');
+  return `
+    ${item.inhalt ? `<div class="body-text" style="margin-bottom:18px">${item.inhalt}</div>` : ''}
+    ${keywords ? `<div style="margin-bottom:20px">
+      <div class="gruende-section-label" style="margin-top:0">Keywords für Instagram-Suche</div>
+      <div>${keywords}</div>
+    </div>` : ''}
+    ${item.aktuell ? `<div class="name-box name-box-current" style="margin-bottom:16px">
+      <div class="name-box-label">Aktueller Profilname</div>
+      <div class="name-box-value">${item.aktuell}</div>
+    </div>` : ''}
+    ${variantsHtml ? `<div style="margin-bottom:16px">
+      <div class="gruende-section-label" style="margin-top:0">Optimierte Varianten</div>
+      <div class="profilname-variants">${variantsHtml}</div>
+    </div>` : ''}
+    ${item.accountname_bewertung ? `<div style="background:var(--lavender-mid);border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.65">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-light);margin-bottom:6px">@Benutzername / Handle</div>
+      ${item.accountname_bewertung}
+    </div>` : ''}`;
+}
+
+function renderSection4(item) {
+  const stilLabels = {
+    'emotional': 'Emotional – spricht Frust an',
+    'verkaufsstark': 'Verkaufsstark – konkrete Zahlen',
+    'direkt': 'Direkt – klare Ansage',
+    'neugierig machend': 'Neugierig – Widerspruch als Hook',
+    'persoenlich & nahbar': 'Persönlich – Identifikation',
+    'persönlich & nahbar': 'Persönlich – Identifikation'
+  };
+  const aktuellHtml = item.bio_aktuell ? `<div class="bio-aktuell-box">
+    <div class="bio-aktuell-label">Deine aktuelle Bio</div>
+    <div class="bio-aktuell-text">${item.bio_aktuell}</div>
+  </div>` : '';
+  const diag = item.inhalt ? `<div class="body-text-light">${item.inhalt}</div>` : '';
+  const bioCards = (item.bios || []).map((bio) => {
+    const ok = bio.zeichen >= 130 && bio.zeichen <= 150;
+    const pct = Math.min(100, Math.max(0, Math.round(((bio.zeichen - 100) / 60) * 100)));
+    const fillColor = ok ? 'var(--green)' : 'var(--orange)';
+    const stilKey = (bio.stil || '').toLowerCase();
+    const stilLabel = stilLabels[stilKey] || bio.stil;
+    return `<div class="bio-card${bio.empfohlen ? ' empfohlen' : ''}">
+      <div class="bio-card-top">
+        <span class="bio-stil-badge">${stilLabel}</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${bio.empfohlen ? '<span class="empfohlen-star">★ Empfohlen</span>' : ''}
+          <button class="bio-copy-btn" onclick="copyText(this.dataset.text)" data-text="${(bio.text||'').replace(/"/g,'&quot;')}">Kopieren</button>
+        </div>
+      </div>
+      <div class="bio-text">${bio.text || ''}</div>
+      <div class="char-row">
+        <span>Zeichen</span>
+        <span class="${ok?'char-ok':'char-warn'}">${bio.zeichen || '?'} / 130–150</span>
+      </div>
+      <div class="char-bar"><div class="char-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+      <div class="bio-actions">
+        ${bio.begruendung ? `<button class="begruendung-toggle" onclick="var t=this.closest('.bio-actions').nextElementSibling;t.classList.toggle('open');this.textContent=t.classList.contains('open')?'▲ Wirkprinzip verbergen':'▼ Wirkprinzip zeigen'">▼ Wirkprinzip zeigen</button>` : '<span></span>'}
+      </div>
+      ${bio.begruendung ? `<div class="begruendung-text">${bio.begruendung}</div>` : ''}
+    </div>`;
+  }).join('');
+  return aktuellHtml + diag + (bioCards ? `<div class="bio-cards">${bioCards}</div>` : '');
+}
+
+function renderSection5(item) {
+  const topHtml = `<div class="body-text" style="margin-bottom:12px">${item.inhalt || ''}</div>`;
+  return topHtml +
+    `${item.schwachpunkt ? `<div class="schwachpunkt-box" style="margin-top:12px"><div class="schwachpunkt-label">Was nicht funktioniert</div>${item.schwachpunkt}</div>` : ''}
+    ${item.empfehlung ? `<div style="margin-top:12px;background:rgba(39,174,96,0.06);border:1px solid rgba(39,174,96,0.2);border-radius:12px;padding:14px 18px;font-size:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1a7a42;margin-bottom:4px">Empfehlung</div>${item.empfehlung}</div>` : ''}`;
+}
+
+const hlColors = [
+  'linear-gradient(135deg,#000000,#2B2B2B)',
+  'linear-gradient(135deg,#FF8F0B,#FFAA44)',
+  'linear-gradient(135deg,#C8A882,#E0C8A8)',
+  'linear-gradient(135deg,#1A1A1A,#444444)',
+  'linear-gradient(135deg,#8B7355,#A0936B)',
+  'linear-gradient(135deg,#CFC5B6,#E0D8CC)'
+];
+const hlFallbackIcons = ['✦','◆','▲','●','★','◉'];
+
+const highlightEmojiMap = {
+  'start hier': '🚀', 'starthier': '🚀', 'über mich': '💜', 'übermich': '💜',
+  'erfahrungen': '⭐', 'angebot': '💎', 'faq': '❓', 'testimonials': '💬',
+  'referenzen': '💬', 'reels': '🎬', 'blog': '✍️', 'community': '👥',
+  'tipps': '💡', 'work with me': '🤝', 'kontakt': '📩', 'kurs': '🎓',
+  'coaching': '🎯', 'podcast': '🎙️', 'shop': '🛍️', 'blog': '✍️'
+};
+
+function renderSection6(item) {
+  const intro = item.inhalt ? `<div class="body-text-light">${item.inhalt}</div>` : '';
+  const highlights = item.highlights || [];
+  const circlesHtml = highlights.map((h, i) => {
+    const key = (h.titel || '').toLowerCase().replace(/\s+/g,'');
+    const emoji = highlightEmojiMap[h.titel.toLowerCase()] || highlightEmojiMap[key] || hlFallbackIcons[i % hlFallbackIcons.length];
+    const bg = hlColors[i % hlColors.length];
+    return `<div class="hl-circle-wrap">
+      <div class="hl-circle" style="background:${bg}">${emoji}</div>
+      <div class="hl-circle-label">${h.titel}</div>
+    </div>`;
+  }).join('');
+  const cards = highlights.map(h => `
+    <div class="highlight-card">
+      <div class="highlight-title">${h.titel}</div>
+      ${h.beschreibung ? `<div style="font-size:13px;color:var(--text-light);line-height:1.5;margin-top:6px;margin-bottom:6px">${h.beschreibung}</div>` : ''}
+      <ul class="highlight-punkte">${(h.punkte||[]).map(p=>`<li>${p}</li>`).join('')}</ul>
+    </div>`).join('');
+  return intro
+    + (circlesHtml ? `<div class="hl-circles-row">${circlesHtml}</div>` : '')
+    + (cards ? `<div class="highlights-grid">${cards}</div>` : '');
+}
+
+const rolleConfig = {
+  'personal story': { label: 'Personal Story', cls: 'tag-personal' },
+  'personal': { label: 'Personal Story', cls: 'tag-personal' },
+  'wunschkundin problem': { label: 'Wunschkundin Problem', cls: 'tag-problem' },
+  'problem': { label: 'Wunschkundin Problem', cls: 'tag-problem' },
+  'lösung': { label: 'Lösung + Social Proof', cls: 'tag-loesung' },
+  'loesung': { label: 'Lösung + Social Proof', cls: 'tag-loesung' },
+  'trust': { label: 'Trust', cls: 'tag-trust' },
+  'community': { label: 'Community', cls: 'tag-community' },
+  'sales': { label: 'Sales', cls: 'tag-sales' }
+};
+const defaultRollen = ['Personal Story', 'Wunschkundin Problem', 'Lösung + Social Proof'];
+
+function renderSection7(item) {
+  const intro = item.inhalt ? `<div class="body-text-light">${item.inhalt}</div>` : '';
+  const posts = (item.pinposts || (item.feed_pinposts && item.feed_pinposts.pinposts) || []).map((p, idx) => {
+    const rolleKey = (p.rolle || p.ziel || '').toLowerCase();
+    const rc = rolleConfig[rolleKey] || { label: p.rolle || p.ziel || defaultRollen[idx] || '', cls: 'tag-community' };
+    return `<div class="pinpost-card">
+      <div class="pinpost-nr">${idx+1}</div>
+      <div class="pinpost-tags">
+        <span class="pinpost-tag ${rc.cls}">${rc.label}</span>
+        ${p.format ? `<span class="pinpost-tag tag-format">${p.format}</span>` : ''}
+      </div>
+      <div class="pinpost-hook">"${p.hook || ''}"</div>
+      ${p.inhalt ? `<div class="pinpost-row"><div class="pinpost-label">Inhalt</div><div class="pinpost-value">${p.inhalt}</div></div>` : ''}
+      ${p.wirkung ? `<div class="pinpost-row"><div class="pinpost-label">Warum das wirkt</div><div class="pinpost-value">${p.wirkung}</div></div>` : ''}
+      ${p.psychologie ? `<div class="pinpost-psychologie">${p.psychologie}</div>` : ''}
+    </div>`;
+  }).join('');
+  return intro + (posts ? `<div class="pinposts-list">${posts}</div>` : '');
+}
+
+const saeulenIcons = ['✦', '◆', '▲', '●', '★', '⬡'];
+
+function renderSection9(item) {
+  const intro = item.inhalt ? `<div class="body-text-light">${item.inhalt}</div>` : '';
+  const cards = (item.saeulen||[]).map((s, i) => `
+    <div class="saeule-card">
+      <div class="saeule-icon">${saeulenIcons[i] || '✦'}</div>
+      <div class="saeule-title">${s.titel}</div>
+      <div class="saeule-beschreibung">${s.beschreibung}</div>
+      <ul class="saeule-ideen">${(s.ideen||[]).map(id=>`<li>${id}</li>`).join('')}</ul>
+    </div>`).join('');
+  return intro + (cards ? `<div class="saeulen-grid">${cards}</div>` : '');
+}
+
+function toggleHookAccordion(header) {
+  const body = header.nextElementSibling;
+  const arrow = header.querySelector('.hook-accordion-arrow');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  arrow.classList.toggle('open', !isOpen);
+}
+
+const HOOK_LIBRARY = [
+  {
+    id: 'community', label: 'Community', count: 30,
+    ziel: 'Identifikation & Zugehörigkeit — Kommentare und Shares auslösen',
+    grad: 'linear-gradient(135deg,#000000,#2B2B2B)',
+    hooks: [
+      { t: 'Du machst ____ und trotzdem das Gefühl, dass andere das irgendwie besser hinbekommen. Kenn ich.', e: ['📱 Du postest regelmäßig und trotzdem das Gefühl, dass andere schneller wachsen. Kenn ich.','🥗 Du isst bewusst und trotzdem das Gefühl, dass andere das mit Abnehmen besser hinbekommen. Kenn ich.','✨ Du pflegst dich und trotzdem das Gefühl, dass andere weniger schnell altern. Kenn ich.','💰 Du sparst schon und trotzdem das Gefühl, dass andere das mit Vermögensaufbau besser hinbekommen. Kenn ich.','🌿 Du arbeitest an dir und trotzdem das Gefühl, dass andere innere Ruhe leichter finden. Kenn ich.'] },
+      { t: '____ machen, obwohl niemand schaut. Ihr seid meine Lieblingsmenschen.', e: ['📱 Reels erstellen, obwohl das letzte Video 47 Views hatte. Ihr seid meine Lieblingsmenschen.','🥗 Clean essen, obwohl die ganze Familie Chips futtert. Ihr seid meine Lieblingsmenschen.','✨ Skincare-Routine durchziehen, obwohl niemand den Unterschied sieht. Ihr seid meine Lieblingsmenschen.','💰 Jeden Monat investieren, obwohl das Depot gerade rot ist. Ihr seid meine Lieblingsmenschen.','🌿 Täglich meditieren, obwohl der Rest der Familie noch schläft. Ihr seid meine Lieblingsmenschen.'] },
+      { t: 'Wenn du gerade an ____ arbeitest und dir manchmal denkst: Warum macht das nicht Klick — du bist nicht allein.', e: ['📱 Wenn du gerade an deinem Account arbeitest und denkst: Warum wächst das nicht — du bist nicht allein.','🥗 Wenn du gerade clean isst und denkst: Warum sehe ich noch keine Veränderung — du bist nicht allein.','✨ Wenn du eine Routine aufbaust und denkst: Warum wird die Haut nicht besser — du bist nicht allein.','💰 Wenn du gerade dein Business aufbaust und denkst: Warum kauft noch niemand — du bist nicht allein.','🌿 Wenn du an deinem Mindset arbeitest und denkst: Warum ändert sich nichts — du bist nicht allein.'] },
+      { t: 'Wenn du für ____ brennst aber Angst hast, das laut zu sagen: Lies weiter.', e: ['📱 Wenn du für Instagram brennst aber Angst hast, dass dich alle auslachen: Lies weiter.','🥗 Wenn du für gesundes Essen brennst aber Angst hast, als Fanatikerin zu gelten: Lies weiter.','✨ Wenn du für Skincare brennst aber Angst hast, dass das niemanden interessiert: Lies weiter.','💰 Wenn du für finanzielle Freiheit brennst aber Angst hast, davon zu reden: Lies weiter.','🌿 Wenn du für Persönlichkeitsentwicklung brennst aber Angst hast, das als Schwäche zu zeigen: Lies weiter.'] },
+      { t: 'Wer gerade mit ____ kämpft und nicht weiß ob es sich noch lohnt — dieses Reel ist für dich.', e: ['📱 Wer gerade mit Instagram kämpft und nicht weiß ob sich das noch lohnt — dieses Reel ist für dich.','🥗 Wer gerade mit Abnehmen kämpft und nicht weiß ob sich das noch lohnt — dieses Reel ist für dich.','✨ Wer gerade mit Hautproblemen kämpft und nicht weiß ob der Aufwand sich lohnt — dieses Reel ist für dich.','💰 Wer gerade mit dem ersten Einkommen online kämpft und nicht weiß ob es sich lohnt — dieses Reel ist für dich.','🌿 Wer gerade mit dem inneren Chaos kämpft und nicht weiß ob es sich ändert — dieses Reel ist für dich.'] },
+      { t: 'Diese eine Situation kennt fast jede, die ____ macht: Du weißt genau was du tust — und glaubst es trotzdem gerade nicht.', e: ['📱 Diese eine Situation kennt fast jede, die Content erstellt: Du weißt genau was du tust — und glaubst es trotzdem gerade nicht.','🥗 Diese eine Situation kennt fast jede, die abnehmen will: Du weißt genau was du tun musst — und machst es trotzdem gerade nicht.','✨ Diese eine Situation kennt fast jede, die Skincare macht: Du weißt genau was hilft — und zweifelst trotzdem daran.','💰 Diese eine Situation kennt fast jede, die ein Business aufbaut: Du weißt genau was der nächste Schritt ist — und zögerst trotzdem.','🌿 Diese eine Situation kennt fast jede, die an sich arbeitet: Du weißt genau was dir gut tut — und machst es trotzdem nicht.'] },
+      { t: 'Du machst ____, und dein Umfeld versteht immer noch nicht warum. Schreib es in die Kommentare.', e: ['📱 Du postest für dein Business und deine Familie fragt immer noch warum du das machst. Schreib es in die Kommentare.','🥗 Du isst anders als alle anderen und dein Umfeld fragt immer noch warum das sein muss. Schreib es in die Kommentare.','✨ Du investierst in Pflege und dein Umfeld versteht immer noch nicht warum. Schreib es in die Kommentare.','💰 Du baust online ein Business und dein Umfeld versteht immer noch nicht warum. Schreib es in die Kommentare.','🌿 Du arbeitest an dir und dein Umfeld versteht immer noch nicht warum dir das so wichtig ist. Schreib es in die Kommentare.'] },
+      { t: 'Wenn du beim ____ heimlich hoffst, dass keiner fragt wie\'s läuft — das hier ist für dich.', e: ['📱 Wenn du beim Posten heimlich hoffst, dass keiner nach deinen Views fragt — das hier ist für dich.','🥗 Wenn du beim Abnehmen heimlich hoffst, dass niemand fragt wie es läuft — das hier ist für dich.','✨ Wenn du deine Routine testest und hoffst, dass keiner fragt ob es was bringt — das hier ist für dich.','💰 Wenn du dein Business aufbaust und hoffst, dass niemand fragt ob du schon verdienst — das hier ist für dich.','🌿 Wenn du an deinem Mindset arbeitest und hoffst, dass keiner fragt ob es was bringt — das hier ist für dich.'] },
+      { t: '"Ich fange mit ____ an, wenn ____." Das sagst du dir seit ____ Monaten.', e: ['📱 "Ich fange mit Reels an, wenn ich besser im Schneiden bin." Das sagst du dir seit 6 Monaten.','🥗 "Ich fange mit Clean Eating an, wenn der Alltag ruhiger wird." Das sagst du dir seit Monaten.','✨ "Ich fange mit der Skincare-Routine an, wenn ich die richtigen Produkte gefunden habe." Das sagst du dir seit Monaten.','💰 "Ich fange mit dem Business an, wenn ich mehr Zeit habe." Das sagst du dir seit 2 Jahren.','🌿 "Ich fange mit Meditation an, wenn ich weniger gestresst bin." Das sagst du dir seit Monaten.'] },
+      { t: '"Ich muss erst besser werden in ____, bevor ich anfange." Nein. Musst du nicht.', e: ['📱 "Ich muss erst besser im Reel-Schneiden sein, bevor ich anfange zu posten." Nein. Musst du nicht.','🥗 "Ich muss erst alles über Ernährung wissen, bevor ich anfange clean zu essen." Nein. Musst du nicht.','✨ "Ich muss erst alle Inhaltsstoffe kennen, bevor ich eine Routine starte." Nein. Musst du nicht.','💰 "Ich muss erst mehr über Business wissen, bevor ich starte." Nein. Musst du nicht.','🌿 "Ich muss erst meine Vergangenheit aufgearbeitet haben, bevor ich anfange zu wachsen." Nein. Musst du nicht.'] },
+      { t: 'Wenn du dir bei ____ öfter denkst "die anderen haben das irgendwie besser drauf" — lies das hier.', e: ['📱 Wenn du dir öfter denkst "andere Accounts wachsen irgendwie einfacher" — lies das hier.','🥗 Wenn du denkst "andere schaffen das mit dem Abnehmen irgendwie leichter als ich" — lies das hier.','✨ Wenn du denkst "andere haben von Natur aus bessere Haut als ich" — lies das hier.','💰 Wenn du denkst "anderen fällt das mit dem Online-Verdienen irgendwie leichter" — lies das hier.','🌿 Wenn du denkst "andere finden innere Ruhe schneller als ich" — lies das hier.'] },
+      { t: '"Lohnt sich ____ für mich überhaupt?" Ich hatte dieselbe Frage. Meine Antwort:', e: ['📱 "Lohnt sich Instagram für mich überhaupt mit meiner kleinen Reichweite?" Ich hatte dieselbe Frage. Meine Antwort:','🥗 "Lohnt sich der ganze Aufwand mit Clean Eating überhaupt?" Ich hatte dieselbe Frage. Meine Antwort:','✨ "Lohnen sich teure Pflegeprodukte für mich überhaupt?" Ich hatte dieselbe Frage. Meine Antwort:','💰 "Lohnt sich ein Online-Business neben Job und Familie überhaupt?" Ich hatte dieselbe Frage. Meine Antwort:','🌿 "Lohnt sich Coaching oder Selbstentwicklung überhaupt für mich?" Ich hatte dieselbe Frage. Meine Antwort:'] },
+      { t: 'Wer kennt das: du machst ____, und fünf Minuten später zweifelst du schon wieder.', e: ['📱 Wer kennt das: du postest ein Reel, bist kurz stolz — und fünf Minuten später zweifelst du schon wieder.','🥗 Wer kennt das: du isst heute super healthy — und fünf Minuten später zweifelst du ob es was bringt.','✨ Wer kennt das: du startest eine neue Routine — und fünf Minuten später fragst du dich ob das nötig ist.','💰 Wer kennt das: du machst deinen ersten Schritt ins Business — und fünf Minuten später zweifelst du wieder.','🌿 Wer kennt das: du hast heute super auf dich geschaut — und fünf Minuten später machst du dir schon wieder Vorwürfe.'] },
+      { t: 'Dieser Gedanke kommt bei ____ fast allen irgendwann: "Vielleicht bin ich einfach nicht gemacht dafür."', e: ['📱 Dieser Gedanke kommt beim Account-Aufbau fast allen irgendwann: "Vielleicht bin ich einfach nicht gemacht fürs Internet."','🥗 Dieser Gedanke kommt beim Abnehmen fast allen irgendwann: "Vielleicht ist mein Körper einfach nicht so gebaut."','✨ Dieser Gedanke kommt bei Skincare fast allen irgendwann: "Vielleicht habe ich einfach schlechte Gene."','💰 Dieser Gedanke kommt beim Business-Aufbau fast allen irgendwann: "Vielleicht bin ich einfach kein Unternehmertyp."','🌿 Dieser Gedanke kommt bei der Selbstentwicklung fast allen irgendwann: "Vielleicht kann ich mich einfach nicht wirklich verändern."'] },
+      { t: 'Wenn du beim ____ gerade denkst "das bringt doch sowieso nichts" — warte kurz.', e: ['📱 Wenn du gerade denkst "meine Reels bringen doch sowieso nichts" — warte kurz.','🥗 Wenn du gerade denkst "diese Ernährungsumstellung bringt doch sowieso nichts" — warte kurz.','✨ Wenn du gerade denkst "diese Skincare-Routine bringt doch sowieso nichts" — warte kurz.','💰 Wenn du gerade denkst "mein Business-Aufbau bringt doch sowieso nichts" — warte kurz.','🌿 Wenn du gerade denkst "diese ganze Selbstentwicklung bringt doch sowieso nichts" — warte kurz.'] },
+      { t: 'Wenn du dieses Reel gerade siehst und gerade mit ____ kämpfst: kein Zufall.', e: ['📱 Wenn du dieses Reel gerade siehst und mit deinem Account-Wachstum kämpfst: kein Zufall.','🥗 Wenn du dieses Reel gerade siehst und gerade mit deiner Ernährung kämpfst: kein Zufall.','✨ Wenn du dieses Reel gerade siehst und gerade mit deiner Haut kämpfst: kein Zufall.','💰 Wenn du dieses Reel gerade siehst und gerade mit deinem Business kämpfst: kein Zufall.','🌿 Wenn du dieses Reel gerade siehst und gerade mit dir selbst kämpfst: kein Zufall.'] },
+      { t: 'An alle, die gerade mit ____ starten und nicht wissen ob das der richtige Weg ist:', e: ['📱 An alle, die gerade mit Instagram starten und nicht wissen ob das der richtige Kanal ist:','🥗 An alle, die gerade ihre Ernährung umstellen und nicht wissen ob das der richtige Weg ist:','✨ An alle, die gerade mit Skincare anfangen und nicht wissen welche Routine passt:','💰 An alle, die gerade ihr erstes Online-Business aufbauen und nicht wissen ob das klappt:','🌿 An alle, die gerade mit Persönlichkeitsentwicklung starten und nicht wissen wo anfangen:'] },
+      { t: 'Stell dir vor, du hättest das hier vor ____ Monaten gelesen, als du mit ____ angefangen hast.', e: ['📱 Stell dir vor, du hättest das vor 6 Monaten gelesen, als du mit Instagram angefangen hast.','🥗 Stell dir vor, du hättest das vor einem Jahr gelesen, als du mit Clean Eating angefangen hast.','✨ Stell dir vor, du hättest das vor einem Jahr gelesen, als du mit Skincare angefangen hast.','💰 Stell dir vor, du hättest das vor 2 Jahren gelesen, als du mit deinem Business angefangen hast.','🌿 Stell dir vor, du hättest das vor einem Jahr gelesen, als du mit deiner Selbstentwicklung angefangen hast.'] },
+      { t: 'Wenn du für ____ da bist, aber gerade keine Ahnung hast wo anfangen — das hier ist dein Start.', e: ['📱 Wenn du auf Instagram wachsen willst, aber keine Ahnung hast wo anfangen — das hier ist dein Start.','🥗 Wenn du dich gesünder ernähren willst, aber keine Ahnung hast wo anfangen — das hier ist dein Start.','✨ Wenn du deine Haut verbessern willst, aber keine Ahnung hast wo anfangen — das hier ist dein Start.','💰 Wenn du online Geld verdienen willst, aber keine Ahnung hast wo anfangen — das hier ist dein Start.','🌿 Wenn du an dir arbeiten willst, aber keine Ahnung hast wo anfangen — das hier ist dein Start.'] },
+      { t: 'Du machst gerade ____? Schreib dein größtes Problem in die Kommentare. Ich antworte.', e: ['📱 Du arbeitest gerade an deinem Instagram? Schreib dein größtes Problem in die Kommentare. Ich antworte.','🥗 Du arbeitest gerade an deiner Ernährung? Schreib dein größtes Problem in die Kommentare. Ich antworte.','✨ Du arbeitest gerade an deiner Skincare? Schreib dein größtes Problem in die Kommentare. Ich antworte.','💰 Du baust gerade dein Business auf? Schreib dein größtes Problem in die Kommentare. Ich antworte.','🌿 Du arbeitest gerade an dir selbst? Schreib dein größtes Problem in die Kommentare. Ich antworte.'] },
+      { t: 'Wenn du heute mit ____ angefangen hättest — was wäre anders?', e: ['📱 Wenn du heute mit einer klaren Instagram-Strategie angefangen hättest — was wäre anders?','🥗 Wenn du heute mit der richtigen Ernährungsumstellung angefangen hättest — was wäre anders?','✨ Wenn du heute mit der richtigen Skincare-Routine angefangen hättest — was wäre anders?','💰 Wenn du heute mit deinem Business angefangen hättest — was wäre anders?','🌿 Wenn du heute mit der Arbeit an dir selbst angefangen hättest — was wäre anders?'] },
+      { t: 'Schreib deine Nische in die Kommentare. Lass uns gegenseitig pushen.', e: ['📱 Schreib dein Instagram-Thema und dein Followerziel in die Kommentare. Lass uns gegenseitig pushen.','🥗 Schreib dein Ernährungs-Ziel in die Kommentare. Lass uns gegenseitig pushen.','✨ Schreib dein Haut-Ziel in die Kommentare. Lass uns gegenseitig pushen.','💰 Schreib dein Business-Ziel für diesen Monat in die Kommentare. Lass uns gegenseitig pushen.','🌿 Schreib dein persönliches Wachstumsziel in die Kommentare. Lass uns gegenseitig pushen.'] },
+      { t: 'So viele machen ____ und fühlen sich dabei isoliert. Hier seid ihr nicht allein.', e: ['📱 So viele bauen gerade ihren Account auf und fühlen sich damit allein. Hier seid ihr nicht allein.','🥗 So viele versuchen gerade clean zu essen und fühlen sich damit allein. Hier seid ihr nicht allein.','✨ So viele kämpfen gerade mit ihrer Haut und fühlen sich damit allein. Hier seid ihr nicht allein.','💰 So viele bauen gerade ihr Business auf und fühlen sich damit allein. Hier seid ihr nicht allein.','🌿 So viele arbeiten gerade an sich selbst und fühlen sich damit allein. Hier seid ihr nicht allein.'] },
+      { t: 'Ich mache gerade ein Experiment mit ____. Wer macht mit? Schreib ____ in die Kommentare.', e: ['📱 Ich mache gerade ein 30-Tage-Experiment mit Reels. Wer macht mit? Schreib "dabei" in die Kommentare.','🥗 Ich mache gerade ein 14-Tage-Experiment ohne Zucker. Wer macht mit? Schreib "dabei" in die Kommentare.','✨ Ich mache gerade ein 30-Tage-Experiment mit nur 3 Pflegeprodukten. Wer macht mit?','💰 Ich mache gerade ein 90-Tage-Experiment mit meinem Business. Wer macht mit?','🌿 Ich mache gerade ein 21-Tage-Experiment mit täglicher Morgenroutine. Wer macht mit?'] },
+      { t: 'Was ist gerade deine größte Herausforderung bei ____? Ich lese alles.', e: ['📱 Was ist gerade deine größte Herausforderung auf Instagram? Ich lese alles.','🥗 Was ist gerade deine größte Herausforderung bei deiner Ernährung? Ich lese alles.','✨ Was ist gerade deine größte Herausforderung bei deiner Skincare? Ich lese alles.','💰 Was ist gerade deine größte Herausforderung beim Aufbau deines Business? Ich lese alles.','🌿 Was ist gerade deine größte Herausforderung bei der Arbeit an dir selbst? Ich lese alles.'] },
+      { t: 'Nenn mir deine Nische — ich erkläre dir in der Antwort was ich anders machen würde.', e: ['📱 Nenn mir dein Instagram-Thema — ich erkläre dir in der Antwort was ich anders machen würde.','🥗 Nenn mir dein Ernährungs-Problem — ich erkläre dir was ich anders angehen würde.','✨ Nenn mir dein Hautproblem — ich erkläre dir in der Antwort was ich anders machen würde.','💰 Nenn mir dein Business-Thema — ich erkläre dir was ich anders machen würde.','🌿 Nenn mir dein größtes Mindset-Hindernis — ich erkläre dir was ich anders angehen würde.'] },
+      { t: 'Wer weiß, wie sich ____ anfühlt — liked dieses Video. Lass uns sehen, wie viele wir sind.', e: ['📱 Wer weiß, wie sich ein Account-Neustart anfühlt — liked dieses Video. Lass uns sehen, wie viele wir sind.','🥗 Wer weiß, wie sich der erste Monat clean eating anfühlt — liked dieses Video.','✨ Wer weiß, wie sich hartnäckige Hautprobleme anfühlen — liked dieses Video.','💰 Wer weiß, wie sich die ersten Monate Business-Aufbau anfühlen — liked dieses Video.','🌿 Wer weiß, wie sich echter innerer Wandel anfühlt — liked dieses Video.'] },
+      { t: 'Was hast du bei ____ zuletzt aufgegeben, bevor es vielleicht noch hätte klappen können?', e: ['📱 Was hast du auf Instagram zuletzt aufgegeben, bevor es vielleicht noch hätte klappen können?','🥗 Was hast du bei der Ernährung zuletzt aufgegeben, bevor es vielleicht noch hätte klappen können?','✨ Was hast du bei deiner Skincare zuletzt aufgegeben, bevor es vielleicht noch hätte klappen können?','💰 Was hast du bei deinem Business zuletzt aufgegeben, bevor es vielleicht noch hätte klappen können?','🌿 Was hast du bei deiner Selbstentwicklung zuletzt aufgegeben, bevor es vielleicht noch hätte klappen können?'] },
+      { t: 'Wenn du weißt wie es sich anfühlt, an ____ zu arbeiten während alle anderen einfach machen was sie wollen — kommentiere ____', e: ['📱 Wenn du weißt wie es sich anfühlt, Reels zu drehen während alle anderen Netflix schauen — kommentiere 🙋','🥗 Wenn du weißt wie es sich anfühlt, clean zu essen während alle Pizza essen — kommentiere 🥗','✨ Wenn du weißt wie es sich anfühlt, eine Abendroutine durchzuziehen während alle schlafen — kommentiere ✨','💰 Wenn du weißt wie es sich anfühlt, abends noch am Business zu sitzen während alle entspannen — kommentiere 💪','🌿 Wenn du weißt wie es sich anfühlt, an dir zu arbeiten während alle sagen "du bist doch gut genug" — kommentiere 🌿'] }
+    ]
+  },
+  {
+    id: 'trust', label: 'Trust', count: 33,
+    ziel: 'Glaubwürdigkeit & Expertise aufbauen — Vertrauen und Saves gewinnen',
+    grad: 'linear-gradient(135deg,#8B6A4A,#A0885A)',
+    hooks: [
+      { t: 'Ich habe ____ Wochen nur ____ gemacht. Das sind die ehrlichen Zahlen:', e: ['📱 Ich habe 4 Wochen nur Reels mit Text-Overlay gepostet. Das sind die ehrlichen Zahlen:','🥗 Ich habe 6 Wochen nur auf Zucker verzichtet. Das sind die ehrlichen Zahlen:','✨ Ich habe 4 Wochen nur 3 Produkte benutzt. Das sind die ehrlichen Zahlen:','💰 Ich habe 12 Wochen täglich an meinem Business gearbeitet. Das sind die ehrlichen Zahlen:','🌿 Ich habe 8 Wochen täglich meditiert. Das sind die ehrlichen Zahlen:'] },
+      { t: '____ Menschen haben mir in letzter Zeit dieselbe Frage gestellt: ____. Meine Antwort:', e: ['📱 Über 40 Menschen haben mir letzte Woche dieselbe Frage gestellt: "Wie postest du mit so wenig Followern so viel Reichweite?" Meine Antwort:','🥗 Über 30 Frauen haben mir diese Woche dieselbe Frage gestellt: "Schaffst du das wirklich ohne Diät?" Meine Antwort:','✨ Über 50 Menschen haben mir dieselbe Frage gestellt: "Was machst du gegen Pigmentflecken?" Meine Antwort:','💰 Über 25 Menschen haben mir letzte Woche dieselbe Frage gestellt: "Wie hast du dein erstes Einkommen online gemacht?" Meine Antwort:','🌿 Über 60 Menschen haben mir diese Woche dieselbe Frage gestellt: "Wie hörst du auf, dir so viele Sorgen zu machen?" Meine Antwort:'] },
+      { t: 'Das hat ____ Stunden gedauert und ____ gebracht. Schau selbst:', e: ['📱 Das hat 2 Stunden gedauert und 50.000 Views gebracht. Schau selbst:','🥗 Das hat 30 Minuten Meal Prep gedauert und 5 Tage stressfreies Essen gebracht. Schau selbst:','✨ Das hat 5 Minuten täglich gedauert und sichtbar bessere Haut nach 4 Wochen gebracht. Schau selbst:','💰 Das hat 3 Stunden gedauert und meinen ersten Verkauf gebracht. Schau selbst:','🌿 Das hat 10 Minuten täglich gedauert und mehr Ruhe als jeder Urlaub gebracht. Schau selbst:'] },
+      { t: 'Ich habe ____ Methoden für ____ getestet. Nur ____ haben wirklich funktioniert.', e: ['📱 Ich habe 12 verschiedene Posting-Strategien getestet. Nur 2 haben wirklich funktioniert.','🥗 Ich habe 8 verschiedene Diäten ausprobiert. Nur eine hat dauerhaft funktioniert.','✨ Ich habe 15 Produkte gegen Pigmentflecken getestet. Nur 3 haben wirklich funktioniert.','💰 Ich habe 6 verschiedene Wege getestet, online Geld zu verdienen. Nur einer hat wirklich funktioniert.','🌿 Ich habe 10 verschiedene Methoden für mehr innere Ruhe ausprobiert. Nur 2 haben wirklich funktioniert.'] },
+      { t: 'Mein Ergebnis nach ____ Wochen mit ____: überraschend. Nicht was ich erwartet hatte.', e: ['📱 Mein Ergebnis nach 8 Wochen mit täglichen Reels: überraschend. Nicht was ich erwartet hatte.','🥗 Mein Ergebnis nach 6 Wochen ohne Zucker: überraschend — nicht nur auf der Waage.','✨ Mein Ergebnis nach 4 Wochen mit nur 3 Pflegeprodukten: überraschend besser als mit 15.','💰 Mein Ergebnis nach 12 Wochen Business-Aufbau: überraschend — aber nicht wie ich gedacht hatte.','🌿 Mein Ergebnis nach 4 Wochen täglich Journaling: überraschend. Ich hätte es nicht geglaubt.'] },
+      { t: 'Vor ____ Wochen war ich bei ____. Heute bin ich bei ____. Was sich dazwischen verändert hat:', e: ['📱 Vor 3 Monaten war ich bei 47 Followern. Heute bin ich bei 2.400. Was sich verändert hat:','🥗 Vor 3 Monaten war ich 5 kg über meinem Ziel. Heute bin ich dort. Was sich verändert hat:','✨ Vor 2 Monaten war meine Haut komplett ausgebrochen. Heute sieht sie so aus. Was sich verändert hat:','💰 Vor 6 Monaten hatte ich 0 Euro Online-Einnahmen. Heute ist das anders. Was sich verändert hat:','🌿 Vor 3 Monaten wachte ich mit Angst auf. Heute nicht mehr. Was sich verändert hat:'] },
+      { t: 'So viel Zeit investiere ich im Schnitt täglich in ____: [ehrliche Aufschlüsselung]', e: ['📱 So viel Zeit investiere ich täglich in meinen Account: Content 20 Min · Stories 10 Min · Interaktion 15 Min · Gesamt: 45 Min.','🥗 So viel Zeit investiere ich täglich in meine Ernährung: Meal Prep 30 Min · Kochen 20 Min · Planung 5 Min · Gesamt: 55 Min.','✨ So viel Zeit investiere ich täglich in meine Skincare: Morgens 5 Min · Abends 8 Min · Gesamt: 13 Minuten.','💰 So viel Zeit investiere ich täglich in mein Business: Content 30 Min · Kundenservice 20 Min · Strategie 15 Min · Gesamt: 65 Min.','🌿 So viel Zeit investiere ich täglich in mein Mindset: Meditation 10 Min · Journaling 10 Min · Bewegung 20 Min · Gesamt: 40 Min.'] },
+      { t: '____ in ____ Tagen — nicht durch Magie, sondern durch diese eine Änderung:', e: ['📱 100.000 Views in 30 Tagen — nicht durch Magie, sondern durch diese eine Änderung:','🥗 4 kg weniger in 30 Tagen — nicht durch Diät, sondern durch diese eine Änderung:','✨ Sichtbar glattere Haut in 21 Tagen — nicht durch teure Produkte, sondern durch diese eine Änderung:','💰 Erste 500 Euro online in 60 Tagen — nicht durch Zufall, sondern durch diese eine Änderung:','🌿 Erste volle Woche ohne Panikattacke — durch diese eine Änderung in meiner Morgenroutine:'] },
+      { t: 'Alle sagen dir, du brauchst ____ für ____. Du brauchst es nicht. Was wirklich zählt:', e: ['📱 Alle sagen dir, du brauchst täglich 3 Reels für Wachstum. Du brauchst es nicht. Was wirklich zählt:','🥗 Alle sagen dir, du brauchst eine strenge Diät zum Abnehmen. Du brauchst es nicht. Was wirklich zählt:','✨ Alle sagen dir, du brauchst teure Seren für gute Haut. Du brauchst sie nicht. Was wirklich zählt:','💰 Alle sagen dir, du brauchst viel Startkapital für ein Online-Business. Du brauchst es nicht. Was wirklich zählt:','🌿 Alle sagen dir, du brauchst jahrelange Therapie um dich zu verändern. Du brauchst sie nicht. Was wirklich zählt:'] },
+      { t: '"Du musst täglich ____ machen damit ____ funktioniert." Stimmt nicht. Ich zeige dir warum.', e: ['📱 "Du musst täglich posten damit Instagram funktioniert." Stimmt nicht. Ich zeige dir warum.','🥗 "Du musst täglich Sport machen damit Abnehmen funktioniert." Stimmt nicht immer. Ich zeige dir warum.','✨ "Du musst täglich Serum benutzen damit deine Haut besser wird." Stimmt nicht immer. Ich zeige dir warum.','💰 "Du musst täglich Content posten damit ein Online-Business funktioniert." Stimmt nicht. Ich zeige dir warum.','🌿 "Du musst täglich meditieren damit Mindset-Arbeit funktioniert." Stimmt nicht. Ich zeige dir warum.'] },
+      { t: 'Der größte Irrtum bei ____ ist nicht ____. Er ist etwas ganz anderes:', e: ['📱 Der größte Irrtum bei Instagram-Wachstum ist nicht die Posting-Frequenz. Er ist etwas ganz anderes:','🥗 Der größte Irrtum beim Abnehmen sind nicht die Kalorien. Es ist etwas ganz anderes:','✨ Der größte Irrtum bei Skincare sind nicht die Produkte. Es ist etwas ganz anderes:','💰 Der größte Irrtum beim Online-Business ist nicht das falsche Produkt. Es ist etwas ganz anderes:','🌿 Der größte Irrtum bei Persönlichkeitsentwicklung ist nicht fehlende Disziplin. Es ist etwas ganz anderes:'] },
+      { t: 'Niemand sagt dir das über ____: [unbequeme Wahrheit]', e: ['📱 Niemand sagt dir das über Instagram: Du kannst mit 300 Followern mehr verdienen als andere mit 30.000.','🥗 Niemand sagt dir das über Abnehmen: Die ersten 3 Wochen fühlst du dich schlechter — bevor es besser wird.','✨ Niemand sagt dir das über Skincare: Deine Haut braucht Zeit um sich an neue Produkte zu gewöhnen.','💰 Niemand sagt dir das über Online-Business: Die ersten 3 Monate fühlen sich an wie Scheitern — das ist normal.','🌿 Niemand sagt dir das über Persönlichkeitsentwicklung: Es wird zwischendurch schlechter bevor es besser wird.'] },
+      { t: 'Ehrlich gesagt: Die meisten Ratschläge zu ____ sind falsch. Was ich stattdessen gelernt habe:', e: ['📱 Ehrlich gesagt: Die meisten Instagram-Ratschläge die du bekommst, sind falsch. Was ich stattdessen gelernt habe:','🥗 Ehrlich gesagt: Die meisten Abnehm-Ratschläge die du bekommst, sind falsch. Was ich stattdessen gelernt habe:','✨ Ehrlich gesagt: Die meisten Skincare-Ratschläge die du bekommst, sind falsch. Was ich stattdessen gelernt habe:','💰 Ehrlich gesagt: Die meisten Business-Ratschläge die du bekommst, sind falsch. Was ich stattdessen gelernt habe:','🌿 Ehrlich gesagt: Die meisten Mindset-Ratschläge die du bekommst, sind falsch. Was ich stattdessen gelernt habe:'] },
+      { t: '____ ist viel einfacher als alle behaupten — wenn du aufhörst, an ____ zu glauben.', e: ['📱 Instagram-Wachstum ist viel einfacher als alle behaupten — wenn du aufhörst, an den Algorithmus-Mythos zu glauben.','🥗 Gesund essen ist viel einfacher als alle behaupten — wenn du aufhörst, an die Diät-Mentalität zu glauben.','✨ Gute Haut ist viel einfacher als alle behaupten — wenn du aufhörst, an "mehr Produkte = bessere Haut" zu glauben.','💰 Online Geld verdienen ist viel einfacher als alle behaupten — wenn du aufhörst zu glauben, du brauchst erst eine große Audience.','🌿 Innere Ruhe ist viel einfacher als alle behaupten — wenn du aufhörst zu glauben, du seist halt ein Stresstyp.'] },
+      { t: 'Ich dachte auch, ____ sei der einzige Weg. Dann habe ich das hier entdeckt:', e: ['📱 Ich dachte auch, tägliches Posten sei der einzige Weg zu wachsen. Dann habe ich das hier entdeckt:','🥗 Ich dachte auch, strenge Diät sei der einzige Weg abzunehmen. Dann habe ich das hier entdeckt:','✨ Ich dachte auch, teure Produkte seien der einzige Weg zu guter Haut. Dann habe ich das hier entdeckt:','💰 Ich dachte auch, ein großes Publikum sei die einzige Voraussetzung. Dann habe ich das hier entdeckt:','🌿 Ich dachte auch, Therapie sei der einzige Weg sich zu verändern. Dann habe ich das hier entdeckt:'] },
+      { t: 'Was dir niemand über ____ sagt, weil es nicht sexy klingt — aber es ist das Einzige, das funktioniert:', e: ['📱 Was dir niemand über Instagram sagt, weil es nicht sexy klingt — aber es ist das Einzige, das langfristig funktioniert:','🥗 Was dir niemand über Abnehmen sagt, weil es nicht sexy klingt — aber es ist das Einzige, das dauerhaft funktioniert:','✨ Was dir niemand über Hautpflege sagt, weil es nicht sexy klingt — aber es ist das Einzige, das wirklich funktioniert:','💰 Was dir niemand über Online-Business sagt, weil es nicht sexy klingt — aber es ist das Einzige, das funktioniert:','🌿 Was dir niemand über Persönlichkeitsentwicklung sagt, weil es nicht sexy klingt — aber es ist das Einzige, das funktioniert:'] },
+      { t: 'Seit ich aufgehört habe ____ zu machen und stattdessen nur noch ____ tue — passiert hier das:', e: ['📱 Seit ich aufgehört habe "Schlau-Content" zu machen und stattdessen nur noch zeige was ich erlebe — passiert hier das:','🥗 Seit ich aufgehört habe Kalorien zu zählen und stattdessen nur noch auf meinen Hunger höre — passiert hier das:','✨ Seit ich aufgehört habe täglich neue Produkte zu testen und stattdessen nur noch 3 benutze — passiert hier das:','💰 Seit ich aufgehört habe jedes Tool zu kaufen und stattdessen nur noch eine Sache umsetze — passiert hier das:','🌿 Seit ich aufgehört habe meine Gefühle wegzudrücken und stattdessen nur noch zuhöre — passiert hier das:'] },
+      { t: 'Vor ____ dachte ich: ____. Heute weiß ich, dass das der größte Fehler war.', e: ['📱 Vor einem Jahr dachte ich: "Ich brauche mehr Follower bevor ich Geld verdienen kann." Heute weiß ich, dass das falsch war.','🥗 Vor 6 Monaten dachte ich: "Ich muss erst mein Traumgewicht haben bevor ich anfange, mich zu mögen." Heute weiß ich, dass das falsch war.','✨ Vor einem Jahr dachte ich: "Ich brauche hochwertige Produkte bevor meine Haut gut aussieht." Heute weiß ich, dass das falsch war.','💰 Vor 2 Jahren dachte ich: "Ich muss erst alles perfekt haben bevor ich starte." Heute weiß ich, dass das der größte Fehler war.','🌿 Vor einem Jahr dachte ich: "Ich muss erst alles verstehen bevor ich anfangen kann mich zu verändern." Heute weiß ich, dass das falsch war.'] },
+      { t: 'Ich habe ____ lang ____ gemacht. Nichts hat sich verändert. Bis ich ____:', e: ['📱 Ich habe 8 Monate täglich gepostet. Nichts hat sich verändert. Bis ich angefangen habe, meinen Hook anders zu schreiben:','🥗 Ich habe 6 Monate Diät gemacht. Nichts hat sich dauerhaft verändert. Bis ich das hier ausprobiert habe:','✨ Ich habe ein Jahr Produkt nach Produkt getestet. Nichts hat geholfen. Bis ich das hier ausprobiert habe:','💰 Ich habe 12 Monate Content gemacht ohne einen einzigen Verkauf. Bis ich das hier verändert habe:','🌿 Ich habe 2 Jahre an mir gearbeitet ohne echte Veränderung zu sehen. Bis ich das hier ausprobiert habe:'] },
+      { t: 'Alle haben mir gesagt, ich soll ____. Ich habe es ignoriert. Und dann ist das passiert:', e: ['📱 Alle haben mir gesagt, ich soll mehr Hashtags nutzen. Ich habe es ignoriert. Und dann ist das passiert:','🥗 Alle haben mir gesagt, ich soll Low Carb probieren. Ich habe es ignoriert. Und dann ist das passiert:','✨ Alle haben mir gesagt, ich soll Retinol testen. Ich habe es zuerst ignoriert. Und dann ist das passiert:','💰 Alle haben mir gesagt, ich soll mit einem günstigeren Produkt starten. Ich habe es ignoriert. Und dann ist das passiert:','🌿 Alle haben mir gesagt, ich soll einfach positiver denken. Ich habe es ignoriert. Und dann ist das passiert:'] },
+      { t: 'Als ____ passiert ist, habe ich zum ersten Mal wirklich verstanden, wie ____ funktioniert:', e: ['📱 Als mein erstes Reel viral ging, habe ich zum ersten Mal wirklich verstanden, wie der Algorithmus funktioniert:','🥗 Als ich nach 3 Wochen plötzlich keine Lust mehr auf Zucker hatte, habe ich verstanden, wie Ernährung wirklich funktioniert:','✨ Als meine Haut nach 4 Wochen besser aussah als je zuvor, habe ich verstanden, wie Skincare wirklich funktioniert:','💰 Als ich meinen ersten Verkauf hatte, habe ich zum ersten Mal wirklich verstanden, wie Online-Business funktioniert:','🌿 Als ich nach 3 Wochen täglicher Praxis endlich einen ruhigen Kopf hatte, verstand ich zum ersten Mal wie Mindset-Arbeit wirklich geht:'] },
+      { t: 'Die eine Entscheidung bei ____, die alles verändert hat — ich hätte nie gedacht, dass sie das ist:', e: ['📱 Die eine Entscheidung auf Instagram, die alles verändert hat — ich hätte nie gedacht, dass sie das ist:','🥗 Die eine Entscheidung bei meiner Ernährung, die alles verändert hat — ich hätte nie gedacht, dass sie das ist:','✨ Die eine Entscheidung bei meiner Skincare, die alles verändert hat — ich hätte nie gedacht, dass sie das ist:','💰 Die eine Entscheidung in meinem Business, die alles verändert hat — ich hätte nie gedacht, dass sie das ist:','🌿 Die eine Entscheidung, die mein Mindset komplett verändert hat — ich hätte nie gedacht, dass sie das ist:'] },
+      { t: 'Das klingt zu simpel für ____. Und deshalb probiert es kaum jemand:', e: ['📱 Das klingt zu simpel für Instagram-Wachstum. Und deshalb probiert es kaum jemand:','🥗 Das klingt zu simpel für dauerhaftes Abnehmen. Und deshalb probiert es kaum jemand:','✨ Das klingt zu simpel für bessere Haut. Und deshalb probiert es kaum jemand:','💰 Das klingt zu simpel für ein funktionierendes Online-Business. Und deshalb probiert es kaum jemand:','🌿 Das klingt zu simpel für echte innere Ruhe. Und deshalb probiert es kaum jemand:'] },
+      { t: 'Die langweiligste Änderung, die mein Ergebnis bei ____ am meisten beeinflusst hat:', e: ['📱 Die langweiligste Änderung, die mein Instagram-Wachstum am meisten beeinflusst hat:','🥗 Die langweiligste Änderung, die mein Abnehmen am meisten beeinflusst hat:','✨ Die langweiligste Änderung, die meine Haut am meisten verbessert hat:','💰 Die langweiligste Änderung, die mein Business am meisten vorangebracht hat:','🌿 Die langweiligste Änderung, die mein Mindset am meisten verändert hat:'] },
+      { t: 'Ich habe weniger Zeit in ____ investiert — und bessere Ergebnisse bekommen. Warum:', e: ['📱 Ich habe weniger Zeit in Content-Erstellung investiert — und bessere Reichweite bekommen. Warum:','🥗 Ich habe weniger Zeit mit Kalorientracking verbracht — und bessere Ergebnisse beim Abnehmen bekommen. Warum:','✨ Ich habe weniger Produkte in meine Routine aufgenommen — und bessere Haut bekommen. Warum:','💰 Ich habe weniger Zeit in Planung investiert — und schneller Ergebnisse im Business bekommen. Warum:','🌿 Ich habe weniger Zeit in Selbstanalyse investiert — und mehr innere Ruhe bekommen. Warum:'] },
+      { t: 'Weniger ____ hat bei mir zu mehr ____ geführt. Das macht keinen Sinn — bis du das hier weißt:', e: ['📱 Weniger Posts pro Woche haben bei mir zu mehr Reichweite geführt. Das macht keinen Sinn — bis du das hier weißt:','🥗 Weniger Verbote beim Essen haben bei mir zu weniger Heißhunger geführt. Das macht keinen Sinn — bis du das hier weißt:','✨ Weniger Produkte haben bei mir zu besserer Haut geführt. Das macht keinen Sinn — bis du das hier weißt:','💰 Weniger Angebote haben bei mir zu mehr Umsatz geführt. Das macht keinen Sinn — bis du das hier weißt:','🌿 Weniger Disziplin-Versuche haben bei mir zu mehr Konsequenz geführt. Das macht keinen Sinn — bis du das hier weißt:'] },
+      { t: 'Brutal ehrlich: Ich habe ____ komplett aufgehört bei ____. Und was danach passiert ist:', e: ['📱 Brutal ehrlich: Ich habe aufgehört, für die Insights zu posten. Und was dann passiert ist:','🥗 Brutal ehrlich: Ich habe aufgehört, Kalorien zu zählen. Und was dann passiert ist:','✨ Ich habe aufgehört, jeden Monat neue Produkte zu kaufen. Und was danach passiert ist:','💰 Brutal ehrlich: Ich habe aufgehört, jedem Ratschlag zu folgen. Und was danach passiert ist:','🌿 Brutal ehrlich: Ich habe aufgehört, jeden Tag an mir zu arbeiten. Und was danach passiert ist:'] },
+      { t: 'Was ich nicht mehr tue bei ____ — und warum seitdem alles einfacher geworden ist:', e: ['📱 Was ich nicht mehr auf Instagram tue — und warum seitdem alles einfacher und besser geworden ist:','🥗 Was ich beim Essen nicht mehr tue — und warum seitdem alles einfacher geworden ist:','✨ Was ich bei meiner Skincare nicht mehr tue — und warum meine Haut seitdem besser wird:','💰 Was ich in meinem Business nicht mehr tue — und warum seitdem alles klarer geworden ist:','🌿 Was ich für mein Mindset nicht mehr tue — und warum seitdem alles leichter geworden ist:'] },
+      { t: 'Das Gegenteil von dem, was du bei ____ wahrscheinlich gerade machst — genau das funktioniert:', e: ['📱 Das Gegenteil von dem, was du auf Instagram wahrscheinlich gerade machst — genau das funktioniert:','🥗 Das Gegenteil von dem, was du beim Abnehmen wahrscheinlich gerade machst — genau das funktioniert:','✨ Das Gegenteil von dem, was du für deine Haut wahrscheinlich gerade machst — genau das funktioniert:','💰 Das Gegenteil von dem, was du in deinem Business wahrscheinlich gerade machst — genau das funktioniert:','🌿 Das Gegenteil von dem, was du für dein Mindset wahrscheinlich gerade machst — genau das funktioniert:'] },
+      { t: '____k Menschen haben das gesehen — mit einem Account der erst ____ Monate alt ist:', e: ['📱 132.000 Menschen haben dieses Reel gesehen — mit einem Account der gerade mal 3 Monate alt ist:','🥗 280.000 Menschen haben diesen Beitrag gesehen — mit einem Account der erst 4 Monate läuft:','✨ 95.000 Menschen haben das Video gesehen — mit einem Account der erst 2 Monate alt ist:','💰 340.000 Menschen haben das gesehen — mit einem Account der erst seit 5 Monaten existiert:','🌿 175.000 Menschen haben dieses Reel gesehen — mit einem Account der erst 3 Monate läuft:'] },
+      { t: 'In ____ Tagen von ____ auf ____. Ohne Ads. Ohne Kooperationen. Nur durch ____:', e: ['📱 In 42 Tagen von 0 auf 500 Follower. Ohne Ads. Ohne Kooperationen. Nur durch diese eine Content-Strategie:','🥗 In 30 Tagen von 78 kg auf 74 kg. Ohne Diät. Ohne Sport-Zwang. Nur durch diese eine Änderung:','✨ In 28 Tagen von Ausbrüchen zu klarer Haut. Ohne teure Produkte. Nur durch diese eine Routine:','💰 In 60 Tagen von 0 auf erste 1.000 Euro. Ohne große Audience. Ohne Ads. Nur durch das hier:','🌿 In 21 Tagen von täglicher Angst zu echter innerer Ruhe. Ohne Therapie. Nur durch diese Praxis:'] },
+      { t: '____% meiner Follower/Kunden machen das eine Ding — und es ist nicht was du denkst:', e: ['📱 38% meiner Follower schauen täglich meine Stories. Und das liegt nicht an meinem Content — es liegt daran:','🥗 80% meiner Leserinnen sagen, diese eine Änderung hat bei ihnen am meisten gebracht — und es ist nicht was du denkst:','✨ 70% meiner Kundinnen berichten dasselbe: diese eine Sache hat ihre Haut mehr verändert als alle Produkte:','💰 90% der Menschen, die online scheitern, machen denselben Fehler — und es ist nicht was du denkst:','🌿 85% der Menschen, die Mindset-Arbeit aufgeben, scheitern am selben Punkt — und es ist nicht Disziplin:'] }
+    ]
+  },
+  {
+    id: 'sales', label: 'Sales', count: 32,
+    ziel: 'Problem bewusst machen — Entscheidung und Handlung auslösen',
+    grad: 'linear-gradient(135deg,#C8A078,#B8865A)',
+    hooks: [
+      { t: 'Wenn du bei ____ immer noch auf ____ setzt, verschwendest du gerade Zeit.', e: ['📱 Wenn du für Instagram-Wachstum immer noch auf Hashtags setzt, verschwendest du gerade Zeit.','🥗 Wenn du beim Abnehmen immer noch auf Kalorien zählen setzt, verschwendest du möglicherweise Zeit.','✨ Wenn du für bessere Haut immer noch auf mehr Reinigung setzt, verschwendest du gerade Zeit und Geld.','💰 Wenn du für dein Business immer noch auf mehr Follower wartest, verschwendest du gerade Zeit.','🌿 Wenn du für innere Ruhe immer noch auf Willenskraft setzt, verschwendest du gerade Energie.'] },
+      { t: 'Du machst ____ und bekommst kaum Reaktionen. Das Problem ist nicht ____. Es ist das hier:', e: ['📱 Du postest und bekommst kaum Reaktionen. Das Problem ist nicht dein Content. Es ist das hier:','🥗 Du isst schon gesund und siehst kaum Veränderung. Das Problem ist nicht die Ernährung. Es ist das hier:','✨ Du pflegst dich schon und siehst kaum Verbesserung. Das Problem ist nicht die Creme. Es ist das hier:','💰 Du machst schon Content und hast kaum Verkäufe. Das Problem ist nicht dein Angebot. Es ist das hier:','🌿 Du arbeitest schon an dir und siehst kaum Veränderung. Das Problem ist nicht du. Es ist das hier:'] },
+      { t: 'Wenn du bei ____ machst was alle machen, wirst du das bekommen was alle bekommen:', e: ['📱 Wenn du auf Instagram machst was alle machen, wirst du das bekommen was alle bekommen: kaum Wachstum.','🥗 Wenn du beim Abnehmen machst was alle machen, wirst du das bekommen was alle bekommen: den Jo-Jo-Effekt.','✨ Wenn du in der Skincare machst was alle machen, wirst du das bekommen was alle bekommen: mittelmäßige Ergebnisse.','💰 Wenn du im Business machst was alle machen, wirst du das bekommen was alle bekommen: keine Kunden.','🌿 Wenn du für dein Mindset machst was alle machen, wirst du das bekommen was alle bekommen: dieselben Muster.'] },
+      { t: 'Der einzige Grund, warum ____ bei dir noch nicht funktioniert:', e: ['📱 Der einzige Grund, warum Instagram-Wachstum bei dir noch nicht funktioniert:','🥗 Der einzige Grund, warum Abnehmen bei dir noch nicht dauerhaft funktioniert:','✨ Der einzige Grund, warum deine Haut sich trotz Pflege noch nicht verbessert:','💰 Der einzige Grund, warum dein Business noch nicht läuft wie du willst:','🌿 Der einzige Grund, warum Mindset-Arbeit bei dir noch nicht funktioniert:'] },
+      { t: 'Jede Woche die du wartest mit ____, kostet dich ____. Rechne das mal aus:', e: ['📱 Jede Woche die du wartest mit deiner Instagram-Strategie, kostet dich ca. 50 potenzielle Follower. Rechne das mal aus:','🥗 Jede Woche die du wartest mit der Ernährungsumstellung, kostet dich möglicherweise 3 Monate Ergebnis. Rechne das mal aus:','✨ Jede Woche die du wartest mit der richtigen Skincare, kostet dich sichtbare Verbesserungen. Rechne das mal aus:','💰 Jede Woche die du wartest mit deinem Business, kostet dich potenzielle erste Einnahmen. Rechne das mal aus:','🌿 Jede Woche die du wartest mit der Arbeit an dir, ist eine Woche mit demselben Muster. Rechne das mal aus:'] },
+      { t: 'Stopp. Bevor du heute noch mehr Zeit in ____ steckst — lies erstmal das hier:', e: ['📱 Stopp. Bevor du heute noch mehr Zeit in Reels erstellen steckst — lies erstmal das hier:','🥗 Stopp. Bevor du heute noch eine neue Diät anfängst — lies erstmal das hier:','✨ Stopp. Bevor du heute noch ein weiteres Produkt kaufst — lies erstmal das hier:','💰 Stopp. Bevor du heute noch einen weiteren Kurs kaufst — lies erstmal das hier:','🌿 Stopp. Bevor du heute noch mehr Selbst-Optimierung betreibst — lies erstmal das hier:'] },
+      { t: 'Wer bei ____ auf ____ setzt, arbeitet doppelt so viel für halb so viel Ergebnis.', e: ['📱 Wer bei Instagram auf tägliches Posten ohne Strategie setzt, arbeitet doppelt so viel für halb so viel Reichweite.','🥗 Wer beim Abnehmen auf Kalorienzählen ohne Qualität setzt, arbeitet doppelt so viel für halb so viel Ergebnis.','✨ Wer bei Skincare auf viele Produkte statt Routine setzt, arbeitet doppelt so viel für halb so viel Ergebnis.','💰 Wer im Business auf mehr Content statt klare Positionierung setzt, arbeitet doppelt so viel für halb so viel Umsatz.','🌿 Wer beim Mindset auf Willenskraft statt Struktur setzt, arbeitet doppelt so viel für halb so viel Veränderung.'] },
+      { t: 'Das sagst du dir vermutlich gerade über ____. Ich habe mir dasselbe gesagt. Und war falsch:', e: ['📱 "Mein Account ist noch zu klein für ____." Das sagst du dir gerade. Ich habe mir dasselbe gesagt. Und war falsch:','🥗 "Ich fange nach dem Urlaub mit der Ernährung an." Das sagst du dir gerade. Ich habe mir dasselbe gesagt. Und war falsch:','✨ "Mit meiner Haut kann man eh nichts machen." Das sagst du dir gerade. Ich habe mir dasselbe gesagt. Und war falsch:','💰 "Ich brauche erst mehr Follower um zu verkaufen." Das sagst du dir gerade. Ich habe mir dasselbe gesagt. Und war falsch:','🌿 "Ich bin halt so — das kann man nicht ändern." Das sagst du dir gerade. Ich habe mir dasselbe gesagt. Und war falsch:'] },
+      { t: 'So sah ____ bei mir aus, bevor ich ____ verändert habe. Und so sieht es heute aus:', e: ['📱 So sahen meine Insights aus, bevor ich meine Hook-Strategie verändert habe. Und so sehen sie heute aus:','🥗 So sah mein Verhältnis zu Essen aus, bevor ich eine Sache verändert habe. Und so sieht es heute aus:','✨ So sah meine Haut aus, bevor ich meine Routine verändert habe. Und so sieht sie heute aus:','💰 So sah mein Business aus, bevor ich meine Positionierung verändert habe. Und so sieht es heute aus:','🌿 So sah mein Alltag aus, bevor ich eine Sache verändert habe. Und so sieht er heute aus:'] },
+      { t: 'Ich habe alles bei ____ gleich gelassen — nur ____ verändert. Das Ergebnis hat mich überrascht:', e: ['📱 Ich habe alles gleich gelassen — nur den ersten Satz meiner Hooks verändert. Das Ergebnis hat mich überrascht:','🥗 Ich habe alles beim Essen gleich gelassen — nur die Reihenfolge verändert. Das Ergebnis hat mich überrascht:','✨ Ich habe alle Produkte gleich gelassen — nur die Reihenfolge verändert. Das Ergebnis hat mich überrascht:','💰 Ich habe alles im Business gleich gelassen — nur meine Preise verändert. Das Ergebnis hat mich überrascht:','🌿 Ich habe alles gleich gelassen — nur die Zeit verändert wann ich meditiere. Das Ergebnis hat mich überrascht:'] },
+      { t: 'Bevor ich wusste, wie ____ wirklich funktioniert: ____. Danach: ____. Das Learning dazwischen:', e: ['📱 Bevor ich wusste, wie Instagram wirklich funktioniert: 200 Follower in 6 Monaten. Danach: 2.000 in 8 Wochen. Das Learning dazwischen:','🥗 Bevor ich wusste, wie Abnehmen wirklich funktioniert: Jo-Jo-Effekt bei jeder Diät. Danach: 8 kg weg, seit einem Jahr. Das Learning dazwischen:','✨ Bevor ich wusste, wie Skincare wirklich funktioniert: ständige Ausbrüche. Danach: klare Haut. Das Learning dazwischen:','💰 Bevor ich wusste, wie Online-Verkaufen wirklich funktioniert: 0 Verkäufe in 6 Monaten. Danach: erster Monat mit Umsatz. Das Learning dazwischen:','🌿 Bevor ich wusste, wie Veränderung wirklich funktioniert: dieselben Muster seit Jahren. Danach: echte Veränderung. Das Learning dazwischen:'] },
+      { t: 'Ich war genau dort wo du gerade bist mit ____. Was mich rausgezogen hat:', e: ['📱 Ich war genau dort wo du gerade bist: kein Wachstum, kein Sinn, kurz davor aufzuhören. Was mich rausgezogen hat:','🥗 Ich war genau dort wo du gerade bist: jede Diät angefangen und nach 2 Wochen aufgehört. Was mich rausgezogen hat:','✨ Ich war genau dort wo du gerade bist: Geld für Produkte ausgegeben die nichts gebracht haben. Was mich rausgezogen hat:','💰 Ich war genau dort wo du gerade bist: Monate investiert ohne einen einzigen Verkauf. Was mich rausgezogen hat:','🌿 Ich war genau dort wo du gerade bist: alles über Mindset gelesen und trotzdem nichts verändert. Was mich rausgezogen hat:'] },
+      { t: 'Das war vor ____. Keine Ahnung von ____, keine Ergebnisse, keine Richtung. Und dann:', e: ['📱 Das war vor 6 Monaten. Kein Plan, keine Ahnung von Instagram, 34 Follower. Und dann:','🥗 Das war vor einem Jahr. Keine Ahnung von Ernährung, kein Ergebnis, viel Frust. Und dann:','✨ Das war vor 8 Monaten. Keine Ahnung von Skincare, mehr Geld als Ergebnis. Und dann:','💰 Das war vor 2 Jahren. Keine Ahnung von Business, kein Einkommen, viel Zweifel. Und dann:','🌿 Das war vor einem Jahr. Keine Ahnung wie ich mich verändern soll, selbe Muster, kein Fortschritt. Und dann:'] },
+      { t: 'Was sich bei ____ verändert hat, als ich aufgehört habe ____ zu tun:', e: ['📱 Was sich bei meinem Account verändert hat, als ich aufgehört habe für den Algorithmus zu posten:','🥗 Was sich bei meiner Ernährung verändert hat, als ich aufgehört habe, Lebensmittel in gut und schlecht zu teilen:','✨ Was sich bei meiner Haut verändert hat, als ich aufgehört habe, täglich zu überpflegen:','💰 Was sich bei meinem Business verändert hat, als ich aufgehört habe, an jeden zu verkaufen:','🌿 Was sich in meinem Kopf verändert hat, als ich aufgehört habe, mich zu zwingen positiv zu denken:'] },
+      { t: 'Bekannte: "____" — Fremde: "____". Der Unterschied hat mich überrascht.', e: ['📱 Bekannte: "Ist es dir nicht peinlich, mit 80 Followern als Expertin aufzutreten?" — Fremde: "Kann ich mit dir zusammenarbeiten?" Der Unterschied hat mich überrascht.','🥗 Bekannte: "Schon wieder Diät?" — Fremde: "Wie hast du das geschafft?" Der Unterschied hat mich überrascht.','✨ Bekannte: "Du gibst so viel für Pflege aus?" — Fremde: "Du siehst so jung aus, was machst du?" Der Unterschied hat mich überrascht.','💰 Bekannte: "Mit einem kleinen Account kannst du nichts verkaufen." — Fremde: "Ich kaufe das." Der Unterschied hat mich überrascht.','🌿 Bekannte: "Du denkst zu viel nach." — Fremde: "Du bist so ruhig, wie machst du das?" Der Unterschied hat mich überrascht.'] },
+      { t: 'Was alle über ____ glauben: ____. Was wirklich stimmt: ____.', e: ['📱 Was alle über Instagram glauben: Du brauchst viele Follower um Erfolg zu haben. Was wirklich stimmt: Du brauchst die richtigen.','🥗 Was alle über Abnehmen glauben: Weniger essen = mehr Erfolg. Was wirklich stimmt: Das Gegenteil ist oft wahr.','✨ Was alle über Skincare glauben: Mehr Produkte = bessere Haut. Was wirklich stimmt: Deine Haut braucht Konsistenz, nicht Vielfalt.','💰 Was alle über Online-Business glauben: Du brauchst eine große Audience. Was wirklich stimmt: Du brauchst die richtigen 100 Leute.','🌿 Was alle über Persönlichkeitsentwicklung glauben: Du musst dich jeden Tag pushen. Was wirklich stimmt: Du musst vor allem zuhören.'] },
+      { t: 'Alle reden über ____. Niemand sagt dir was wirklich den Unterschied macht. Ich tu\'s:', e: ['📱 Alle reden über Instagram-Wachstum. Niemand sagt dir was wirklich den Unterschied macht. Ich tu\'s:','🥗 Alle reden über Abnehmen. Niemand sagt dir was wirklich dauerhaft den Unterschied macht. Ich tu\'s:','✨ Alle reden über Skincare-Trends. Niemand sagt dir was wirklich langfristig den Unterschied macht. Ich tu\'s:','💰 Alle reden über passives Einkommen. Niemand sagt dir was wirklich den Unterschied macht. Ich tu\'s:','🌿 Alle reden über Mindset. Niemand sagt dir was wirklich den Unterschied macht. Ich tu\'s:'] },
+      { t: 'Es gibt einen Moment bei ____, der alles verändert. Ich weiß jetzt wann er kommt:', e: ['📱 Es gibt einen Moment beim Instagram-Aufbau, der alles verändert. Ich weiß jetzt wann er kommt:','🥗 Es gibt einen Moment bei der Ernährungsumstellung, der alles verändert. Ich weiß jetzt wann er kommt:','✨ Es gibt einen Moment bei der Skincare, der alles verändert. Ich weiß jetzt wann er kommt:','💰 Es gibt einen Moment beim Business-Aufbau, der alles verändert. Ich weiß jetzt wann er kommt:','🌿 Es gibt einen Moment bei der Selbstentwicklung, der alles verändert. Ich weiß jetzt wann er kommt:'] },
+      { t: 'Niemand hat mir gesagt, dass ____ so funktioniert. Also sage ich es dir:', e: ['📱 Niemand hat mir gesagt, dass Reichweite auf Instagram so funktioniert. Also sage ich es dir:','🥗 Niemand hat mir gesagt, dass Abnehmen so funktioniert. Also sage ich es dir:','✨ Niemand hat mir gesagt, dass Skincare so funktioniert. Also sage ich es dir:','💰 Niemand hat mir gesagt, dass Online-Verkaufen so funktioniert. Also sage ich es dir:','🌿 Niemand hat mir gesagt, dass echte Veränderung so funktioniert. Also sage ich es dir:'] },
+      { t: 'Wenn du bei ____ nicht weiterkommst — es liegt wahrscheinlich nicht an ____. Es liegt an ____:', e: ['📱 Wenn du auf Instagram nicht weiterkommst — es liegt nicht an der Posting-Frequenz. Es liegt an deinem Hook:','🥗 Wenn du beim Abnehmen nicht weiterkommst — es liegt nicht an der Ernährung. Es liegt am Schlaf:','✨ Wenn du mit deiner Haut nicht weiterkommst — es liegt nicht an den Produkten. Es liegt an der Reihenfolge:','💰 Wenn du mit deinem Business nicht weiterkommst — es liegt nicht am Produkt. Es liegt an der Positionierung:','🌿 Wenn du bei der Selbstentwicklung nicht weiterkommst — es liegt nicht an Disziplin. Es liegt am System:'] },
+      { t: 'Die eine Frage, die du dir bei ____ täglich stellen solltest — und die die meisten nie stellen:', e: ['📱 Die eine Frage die du dir bei jedem Reel stellen solltest — und die die meisten nie stellen:','🥗 Die eine Frage die du dir bei jeder Mahlzeit stellen solltest — und die die meisten nie stellen:','✨ Die eine Frage die du dir beim Kauf eines Pflegeprodukts stellen solltest — und die die meisten nie stellen:','💰 Die eine Frage die du dir bei jedem Business-Content stellen solltest — und die die meisten nie stellen:','🌿 Die eine Frage die du dir täglich stellen solltest — und die die meisten nie stellen:'] },
+      { t: 'Ich habe ____ Menschen bei ____ begleitet. Das Eine, das alle Erfolgreichen gemeinsam hatten:', e: ['📱 Ich habe Dutzende Accounts bei ihrem Instagram-Aufbau begleitet. Das Eine, das alle Erfolgreichen gemeinsam hatten:','🥗 Ich habe viele Frauen bei ihrer Ernährungsumstellung begleitet. Das Eine, das alle mit Erfolg gemeinsam haben:','✨ Ich habe Hunderte Kundinnen bei ihrer Skincare begleitet. Das Eine, das alle mit guter Haut gemeinsam haben:','💰 Ich habe viele Unternehmerinnen beim Business-Aufbau begleitet. Das Eine, das alle Erfolgreichen gemeinsam haben:','🌿 Ich habe viele Frauen bei ihrer Persönlichkeitsentwicklung begleitet. Das Eine, das alle Erfolgreichen gemeinsam haben:'] },
+      { t: 'Das Muster, das ich immer wieder sehe bei ____ das nicht funktioniert:', e: ['📱 Das Muster, das ich immer wieder bei Instagram-Accounts sehe die nicht wachsen:','🥗 Das Muster, das ich immer wieder bei Abnehm-Versuchen sehe die scheitern:','✨ Das Muster, das ich immer wieder bei Skincare-Routinen sehe die nicht wirken:','💰 Das Muster, das ich immer wieder bei Businesses sehe die nicht starten:','🌿 Das Muster, das ich immer wieder bei Veränderungs-Versuchen sehe die scheitern:'] },
+      { t: 'Was passiert, wenn du jetzt anfängst mit ____: ____. Was passiert, wenn nicht: ____.', e: ['📱 Was passiert, wenn du jetzt mit einer klaren Hook-Strategie anfängst: Wachstum. Was passiert, wenn nicht: du postest weiter für 50 Views.','🥗 Was passiert, wenn du jetzt mit der Ernährungsumstellung anfängst: in 3 Monaten bist du dort. Was passiert, wenn nicht: dasselbe wie letztes Jahr.','✨ Was passiert, wenn du jetzt mit der richtigen Routine anfängst: bessere Haut in 4 Wochen. Was passiert, wenn nicht: dasselbe Geld, selbes Ergebnis.','💰 Was passiert, wenn du jetzt mit deinem Business anfängst: erste Einnahmen in 90 Tagen. Was passiert, wenn nicht: du fragst dich in einem Jahr noch ob es klappt.','🌿 Was passiert, wenn du jetzt anfängst an dir zu arbeiten: in 6 Monaten erkennst du dich kaum wieder. Was passiert, wenn nicht: dieselben Muster in einem Jahr.'] },
+      { t: 'In ____ wird sich entweder ____ oder ____ für dich verändert haben. Was den Unterschied macht:', e: ['📱 In 90 Tagen wird sich bei deinem Account entweder viel oder nichts verändert haben. Was den Unterschied macht:','🥗 In 3 Monaten wirst du entweder am Ziel sein oder wieder von vorne anfangen. Was den Unterschied macht:','✨ In 6 Wochen wird sich deine Haut entweder sichtbar verbessert haben oder nicht. Was den Unterschied macht:','💰 In einem Jahr wirst du entweder erste Einnahmen haben oder immer noch warten. Was den Unterschied macht:','🌿 In 6 Monaten wirst du dich entweder wirklich verändert haben oder noch auf den richtigen Moment warten. Was den Unterschied macht:'] },
+      { t: 'Ich wünschte, jemand hätte mir das über ____ schon früher gesagt:', e: ['📱 Ich wünschte, jemand hätte mir das über Instagram schon früher gesagt:','🥗 Ich wünschte, jemand hätte mir das über Ernährung und Abnehmen schon früher gesagt:','✨ Ich wünschte, jemand hätte mir das über Skincare schon mit 30 gesagt:','💰 Ich wünschte, jemand hätte mir das über Online-Business schon früher gesagt:','🌿 Ich wünschte, jemand hätte mir das über echte Veränderung schon früher gesagt:'] },
+      { t: 'Ich habe ____ Euro in mein ____ investiert letzten Monat. Hier die ehrliche Aufschlüsselung:', e: ['📱 Ich habe 110 Euro in meinen Account investiert letzten Monat. Claude Pro, Canva, Alfima. Hier die ehrliche Aufschlüsselung:','🥗 Ich habe 120 Euro in meine Ernährung investiert letzten Monat. Lebensmittel, Supplements, Kurs. Hier die ehrliche Aufschlüsselung:','✨ Ich habe 85 Euro in meine Skincare investiert letzten Monat. 3 Produkte. Hier die ehrliche Aufschlüsselung — und was sich lohnt:','💰 Ich habe 200 Euro in mein Business investiert letzten Monat. Tools, Kurs, Werbung. Hier die ehrliche Aufschlüsselung:','🌿 Ich habe 60 Euro in mein Mindset investiert letzten Monat. Buch, App, Kurs. Hier die ehrliche Aufschlüsselung:'] },
+      { t: '____ Menschen haben mir gezeigt, dass ____ wirklich funktioniert — hier die Zahlen:', e: ['📱 Über 200 Accounts haben mir gezeigt, dass dieser eine Reel-Aufbau wirklich funktioniert — hier die Zahlen:','🥗 Über 50 Frauen haben mir gezeigt, dass diese Ernährungsmethode wirklich funktioniert — hier die Zahlen:','✨ Über 100 Kundinnen haben mir gezeigt, dass diese 3-Produkte-Routine wirklich funktioniert — hier die Zahlen:','💰 Über 80 Unternehmerinnen haben mir gezeigt, dass dieser Verkaufsweg wirklich funktioniert — hier die Zahlen:','🌿 Über 60 Frauen haben mir gezeigt, dass diese Praxis wirklich funktioniert — hier die Zahlen:'] },
+      { t: 'Der Unterschied zwischen denen die bei ____ Ergebnisse sehen und denen die nicht — ist nicht Talent:', e: ['📱 Der Unterschied zwischen Accounts die wachsen und denen die stagnieren — ist nicht Talent oder Glück:','🥗 Der Unterschied zwischen Menschen die dauerhaft abnehmen und denen die es nicht schaffen — ist nicht Willenskraft:','✨ Der Unterschied zwischen Frauen mit guter Haut und denen die immer noch kämpfen — ist nicht Genetik:','💰 Der Unterschied zwischen Unternehmerinnen die verkaufen und denen die nicht — ist nicht die Größe der Audience:','🌿 Der Unterschied zwischen Menschen die sich wirklich verändern und denen die es versuchen — ist nicht Disziplin:'] }
+    ]
+  }
+];
+
+function renderSection10() {
+  const intro = `<p style="font-size:14px;color:var(--text-light);font-style:italic;margin-bottom:18px">95 universelle Hook-Templates mit Nischen-Beispielen für 5 Bereiche. Ersetze ____ mit deiner Nische, deinem Thema oder deiner Zielgruppe.</p>`;
+  const accordion = HOOK_LIBRARY.map(cat => {
+    const hooksHtml = cat.hooks.map(h => {
+      const escaped = h.t.replace(/"/g,'&quot;');
+      const examples = h.e.map(ex => `<div class="hook-lib-example">${ex}</div>`).join('');
+      return `<div class="hook-lib-item">
+        <div class="hook-lib-template">
+          <span class="hook-lib-template-text">${h.t}</span>
+          <button class="hook-copy" onclick="copyText(this.dataset.text)" data-text="${escaped}">↗</button>
+        </div>
+        <div class="hook-lib-examples">${examples}</div>
+      </div>`;
+    }).join('');
+    return `<div class="hook-accordion-section">
+      <div class="hook-accordion-header" style="background:${cat.grad}" onclick="toggleHookAccordion(this)">
+        <div>
+          <div class="hook-accordion-title">${cat.label} — ${cat.count} Hooks</div>
+          <div class="hook-accordion-sub">${cat.ziel}</div>
+        </div>
+        <div class="hook-accordion-arrow">▼</div>
+      </div>
+      <div class="hook-accordion-body">${hooksHtml}</div>
+    </div>`;
+  }).join('');
+  return intro + `<div class="hook-accordion-wrapper">${accordion}</div>`;
+}
+
+/* ── Quick Win Content (feste Sektion nach der Hook-Bibliothek) ─ */
+function escapeHtml(s) {
+  return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function printPromptText(title, text) {
+  const w = window.open('', '_blank');
+  if (!w) return;
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
+    <style>
+      body{font-family:'DM Sans',Arial,sans-serif;padding:48px;color:#000;line-height:1.7;max-width:680px;margin:0 auto}
+      h1{font-family:Georgia,'Playfair Display',serif;font-size:22px;margin-bottom:24px}
+      pre{white-space:pre-wrap;font-family:inherit;font-size:14px;margin:0}
+    </style></head><body><h1>${title}</h1><pre>${escapeHtml(text)}</pre></body></html>`);
+  w.document.close();
+  setTimeout(() => { w.focus(); w.print(); }, 250);
+}
+
+const PROMPT_AB = `Du bist mein persönlicher Content-Sparringspartner für Instagram.
+
+Deine Aufgabe ist es, aus meinen echten Erfahrungen, Ergebnissen und Veränderungen konkrete Reel-Ideen zu entwickeln, mit denen meine Zielgruppe sich wiedererkennt und gleichzeitig einen klaren Grund bekommt, mir zu folgen.
+
+Wichtig:
+Ich möchte keine allgemeinen Content-Tipps und keine austauschbaren Hooks.
+
+Meine stärksten Inhalte entstehen aus echten Situationen:
+Wo war ich vorher?
+Was wollte ich verändern?
+Was habe ich konkret gemacht?
+Was ist danach passiert?
+
+Die Inhalte sollen zeigen: „Wenn das bei ihr möglich war, könnte ich das auch schaffen.“
+
+SCHRITT 1: LERNE MEIN THEMA KENNEN
+
+Frag mich nacheinander und warte jeweils auf meine Antwort:
+
+1. In welcher Nische bzw. zu welchem Thema arbeitest du?
+
+2. Wer ist deine Wunschkundin bzw. Zielgruppe?
+Was beschäftigt sie gerade?
+Wo hängt sie fest?
+Was möchte sie gerne erreichen?
+
+3. Welche konkreten Ergebnisse hast du selbst bereits erreicht?
+Bitte mit Zahlen, Zeiträumen oder konkreten Situationen, wenn möglich.
+
+4. Welche Veränderungen hast du selbst erlebt?
+Wo warst du vorher und wo bist du heute?
+
+5. Welche Fehler, Entscheidungen, Wendepunkte oder Erkenntnisse haben dich auf diesem Weg weitergebracht?
+
+6. Welche kleinen Ergebnisse oder Quick Wins hattest du zuletzt, die für deine Zielgruppe interessant sein könnten?
+
+7. Gibt es Kundinnen, Kunden oder andere Menschen, bei denen du eine konkrete Veränderung begleitet hast?
+Wenn ja: Was war vorher und was war danach?
+
+SCHRITT 2: FINDE DIE STÄRKSTEN A→B-GESCHICHTEN
+
+Analysiere meine Antworten und finde daraus mindestens 20 konkrete Situationen, aus denen sich ein Reel entwickeln lässt.
+
+Priorisiere dabei Inhalte mit:
+• einem klaren Vorher
+• einem konkreten Nachher
+• echten Zahlen oder Ergebnissen, wenn vorhanden
+• einer nachvollziehbaren Veränderung
+• einem Problem, das meine Zielgruppe selbst kennt
+• einer Lösung oder einem Weg, den sie nachvollziehen kann
+
+Erfinde KEINE Zahlen, Ergebnisse oder Erfahrungen.
+
+SCHRITT 3: ERSTELLE 20 HOOKS
+
+Schreibe daraus 20 unterschiedliche Hooks.
+
+Der Hook soll möglichst in EINEM Satz zeigen:
+👉 Wo meine Zielgruppe gerade steht
+👉 Was sie sich stattdessen wünscht
+👉 Dass ich diesen Weg selbst gegangen bin
+
+Beispiele für die Struktur:
+
+„Wie ich von [konkretes Vorher] zu [konkretes Nachher] gekommen bin …“
+
+„Ich hatte [Vorher] und heute [Nachher]. Das habe ich verändert.“
+
+„Wenn du gerade [Problem] hast, schau dir an, was bei mir funktioniert hat.“
+
+„Von [Vorher] zu [Nachher] in [Zeitraum] …“
+
+Nutze dabei nicht immer dieselbe Formulierung.
+
+Die Hooks sollen neugierig machen und das Ergebnis zeigen, aber NICHT die komplette Lösung vorwegnehmen.
+
+Der Zuschauer soll denken:
+„Wie hat sie das gemacht?“
+
+SCHRITT 4: ENTWICKLE DIE REELS
+
+Wähle die 10 stärksten Hooks aus.
+
+Entwickle für jeden:
+
+1. HOOK
+Der Text für das erste Reel-Frame.
+
+2. VISUELLE IDEE
+Was könnte man im ersten Moment sehen?
+
+3. VORHER
+Welche konkrete Situation meiner Zielgruppe wird angesprochen?
+
+4. NACHHER
+Welches echte Ergebnis kann ich zeigen?
+
+5. STORY
+Welche 2–4 Stationen meiner eigenen Erfahrung erzähle ich?
+
+6. LÖSUNG
+Welchen konkreten Schritt, Gedanken, Prompt, Ablauf oder welche Entscheidung kann ich daraus ableiten?
+
+7. CTA
+Welche Handlung passt hier?
+Zum Beispiel Speichern, Folgen, Kommentieren oder Profil besuchen.
+
+Wichtig:
+Der Hook ist ein TEASER.
+
+Er soll zeigen, dass sich etwas verändert hat, aber die komplette Methode nicht verraten.
+
+Die Lösung gehört ins Reel bzw. in die Caption.
+
+SCHRITT 5: MACH DIE IDEEN KONKRET
+
+Prüfe jede Idee:
+
+Würde eine Person, die mich noch nie gesehen hat, innerhalb weniger Sekunden verstehen, worum es geht?
+
+Kann sie sich selbst in der Ausgangssituation wiedererkennen?
+
+Ist das Ergebnis konkret genug?
+
+Gibt es einen echten Grund, das Reel zu speichern oder mir zu folgen?
+
+Streiche allgemeine Aussagen wie:
+
+„So wächst du auf Instagram.“
+
+„3 Tipps für mehr Erfolg.“
+
+„So erreichst du deine Ziele.“
+
+Formuliere stattdessen immer möglichst konkret:
+
+„So habe ich …“
+
+„Von … zu …“
+
+„Wie ich … in … geschafft habe.“
+
+„Was ich verändert habe, als …“
+
+Am Ende gib mir die 20 Hooks übersichtlich aus und danach die 10 ausgearbeiteten Reel-Ideen.`;
+
+const PROMPT_QUICKWIN = `Ich baue gerade öffentlich einen Instagram-Account auf und dokumentiere den Prozess ehrlich, ohne Experten-Ton. Ich bin keine Beraterin, sondern teile, was ich selbst gerade lerne und ausprobiere. Das Format soll auch für andere passen, egal ob sie gerade neu starten oder schon länger dabei sind und trotzdem nicht wachsen.
+
+Meine Nische: [NISCHE]
+
+Erstelle 50 Quick-Win-Reel-Ideen, die sich als kurze B-Roll-Reels mit Text-Overlay eignen (keine Sprechreels). Die Ideen sollen konkrete, sofort nachvollziehbare Mini-Erkenntnisse, Tests, Routinen oder Regeln behandeln, die jemand direkt für sich selbst umsetzen oder abspeichern kann, egal auf welchem Stand des Weges sie gerade steht.
+
+Ausgabe:
+Nur eine nummerierte Liste, keine Hooks, keine Erklärungen, keine Ausarbeitung.
+Beispiel:
+1. Der 3-Sekunden-Bio-Test
+2. Die Bekannte-vs-Fremde-Regel
+3. Der Profil-Fremdblick-Check
+4. Die Ein-Satz-Story-Idee
+5. Der Momentum-Move nach einem viralen Reel
+6. Die Content-Ehrlichkeits-Challenge
+7. Der Highlight-Chaos-Check
+8. Die 5-Tage-Sichtbarkeits-Routine
+9. Der Pinned-Post-Test
+10. Die Perspektivwechsel-Frage vor jedem Post
+
+Regeln:
+- Nur die Ideen ausgeben, keine Zusätze
+- Jede Idee muss einen klaren, sofort umsetzbaren Quick Win versprechen
+- Die Ideen sollen zu echten Problemen passen, die Menschen in dieser Nische haben, unabhängig davon ob sie gerade starten oder schon länger postend ohne Wachstum sind
+- Keine Umsatz- oder Business-Flex-Themen, sondern eine ehrliche, peer-mäßige Perspektive
+- Nutze Zahlen, Regeln, Challenges, Tests, Routinen oder Mini-Checklisten, wenn passend
+- Keine Wiederholungen von Ideen oder Formulierungen
+- Kein belehrender oder coach-artiger Ton in den Ideen-Titeln selbst`;
+
+function renderQuickWinSection() {
+  return `<div class="card" style="border-top:4px solid #FF8F0B">
+    <div class="section-header">
+      <div class="section-nr" style="background:#FF8F0B">🎁</div>
+      <div class="section-title">Quick Win Content als Dein Wachstumsmotor</div>
+    </div>
+    <div class="body-text" style="margin-bottom:14px">Es gibt einen Content-Typ, der ganz nebenbei jeden Tag neue Menschen auf Dein Profil zieht: Quick Wins. Damit ist gemeint, dass Du direkt in Deinem Content etwas Konkretes verschenkst, das sich sofort nutzen lässt — einen fertigen Prompt, eine durchdachte Caption zum Abspeichern, eine kleine Anleitung. In dem Moment, in dem jemand dieses kleine Geschenk bekommt und merkt "das hilft mir wirklich", passiert etwas: ein kurzes Glücksgefühl, ein bisschen Dopamin. Und von diesem Gefühl wollen Menschen mehr. Genau das gibst Du ihnen mit jedem Quick Win — einen ganz konkreten Grund, Dir zu folgen, statt einfach weiterzuscrollen.</div>
+    <div class="body-text" style="margin-bottom:18px">Der zuverlässigste Weg zu einem Quick Win ist ein <strong>A→B-Hook</strong>: Du zeigst Deiner Wunschkundin an einem ganz konkreten Beispiel, wie Du selbst von A nach B gekommen bist — von einem Problem zu einer Lösung, von einer Situation zu einem Ergebnis. Die Erkenntnis, die Du dabei gewonnen hast, ist Dein Quick Win.</div>
+
+    <div class="quickwin-frequency">📅 <strong>Häufigkeit:</strong> Streu Quick-Win-Content 1-2x pro Woche in Deinen Mix ein — am besten als Teil Deines Trust-Contents aus Deinem 90-Tage-Fahrplan.</div>
+
+    <div class="gruende-section-label">A→B Reel-Prompt</div>
+    <div class="prompt-card">
+      <div class="prompt-card-header">
+        <div class="prompt-card-title">20 Hooks aus Deinen echten Ergebnissen<span class="prompt-card-sub">Findet und formuliert starke A→B-Hooks aus Deinen eigenen Erfahrungen</span></div>
+        <div class="prompt-card-actions">
+          <button class="prompt-action-btn" onclick="copyText(PROMPT_AB)">Kopieren</button>
+          <button class="prompt-action-btn" onclick="printPromptText('A→B Reel-Prompt', PROMPT_AB)">Als PDF</button>
+        </div>
+      </div>
+      <div class="prompt-card-text">${escapeHtml(PROMPT_AB)}</div>
+    </div>
+
+    <div class="gruende-section-label">Quick-Win-Ideen-Prompt</div>
+    <div class="prompt-card">
+      <div class="prompt-card-header">
+        <div class="prompt-card-title">Quick Win Ideen für Deine Nische<span class="prompt-card-sub">50 sofort nutzbare Reel-Ideen für Deine Nische auf einmal</span></div>
+        <div class="prompt-card-actions">
+          <button class="prompt-action-btn" onclick="copyText(PROMPT_QUICKWIN)">Kopieren</button>
+          <button class="prompt-action-btn" onclick="printPromptText('Quick Win Ideen für Deine Nische', PROMPT_QUICKWIN)">Als PDF</button>
+        </div>
+      </div>
+      <div class="prompt-card-text">${escapeHtml(PROMPT_QUICKWIN)}</div>
+    </div>
+
+    <div class="quickwin-generator-box">
+      <div class="quickwin-generator-label">Noch schneller</div>
+      <div class="quickwin-generator-title">Der Quick-Win-Prompt-Generator</div>
+      <div class="quickwin-generator-text">Wenn Du Dir das Prompten sparen willst: Der Quick-Win-Prompt-Generator liefert Dir auf Knopfdruck 5 fertige Content-Ideen für Deine Nische — mit Titel, Beschreibung, Call-to-Action und Prompt, direkt als PDF zum Abspeichern. 3 Generierungen täglich, macht 15 frische Ideen am Tag.</div>
+      <a class="quickwin-generator-btn" href="https://alfima.com/kristincreate/quick-win-prompt-generator-taglich-neue-follower-magneten-fur-deine-community" target="_blank" rel="noopener">Zum Quick-Win-Prompt-Generator</a>
+    </div>
+  </div>`;
+}
+
+function renderSection11(item) {
+  const todos = (item.todos||[]).map((t,i) =>
+    `<li class="todo-item"><div class="todo-nr">${i+1}</div><div class="todo-text">${t}</div></li>`
+  ).join('');
+  return todos ? `<ul class="todos-list">${todos}</ul>` : '';
+}
+
+let _reportData = {};
+function g(fem, masc) {
+  return (_reportData.meta && _reportData.meta.geschlecht === 'm') ? masc : fem;
+}
+
+function renderWunschkundinProfil(item) {
+  const momente = (item.momente || []).map(m => `<div class="wk-moment">${m}</div>`).join('');
+  const gedanken = (item.gedanken || []).map(gd => `<div class="wk-thought">"${gd}"</div>`).join('');
+  const isMale = _reportData.meta && _reportData.meta.geschlecht === 'm';
+  const avatarStyle = isMale
+    ? `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${encodeURIComponent(item.name||'Wunschkunde')}&backgroundColor=c0aede,b6e3f4`
+    : `https://api.dicebear.com/7.x/lorelei/svg?seed=${encodeURIComponent(item.name||'Wunschkundin')}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+  return `
+    <div class="wk-header">
+      <div class="wk-avatar"><img src="${avatarStyle}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${(item.name||'W').charAt(0)}'}))"></div>
+      <div>
+        <div class="wk-name">${item.name || g('Deine Wunschkundin', 'Dein Wunschkunde')}</div>
+        ${item.alter || item.beruf ? `<div class="wk-meta">${[item.alter, item.beruf].filter(Boolean).join(' · ')}</div>` : ''}
+      </div>
+    </div>
+    <div class="wk-grid">
+      ${item.alltag ? `<div class="wk-item wk-item-full">
+        <div class="wk-item-label">${g('Ihr Alltag', 'Sein Alltag')}</div>
+        <div class="wk-item-text">${item.alltag}</div>
+        ${momente ? `<div class="wk-moments">${momente}</div>` : ''}
+      </div>` : ''}
+      ${item.gefuehl ? `<div class="wk-item">
+        <div class="wk-item-label">${g('Wie sie sich fühlt', 'Wie er sich fühlt')}</div>
+        <div class="wk-item-text">${item.gefuehl}</div>
+      </div>` : ''}
+      ${gedanken ? `<div class="wk-item">
+        <div class="wk-item-label">${g('Was sie denkt', 'Was er denkt')}</div>
+        <div class="wk-thoughts">${gedanken}</div>
+      </div>` : ''}
+    </div>
+    ${item.schmerz ? `<div class="wk-schmerz">
+      <div class="wk-schmerz-label">${g('Ihr größter Schmerz', 'Sein größter Schmerz')}</div>
+      <div class="wk-schmerz-text">"${item.schmerz}"</div>
+    </div>` : ''}`;
+}
+
+function renderSection8(item) {
+  const leitlinien = (item.leitlinien || []).map(l =>
+    `<li style="padding:8px 0;border-bottom:1px solid var(--lavender-dark);font-size:14px;line-height:1.6">${l}</li>`
+  ).join('');
+  return leitlinien ? `<div class="gruende-section-label">Story-Leitlinien</div><ul style="list-style:none;padding:0">${leitlinien}</ul>` : '';
+}
+
+const sectionIcons = {
+  1:'⚡', 2:'🎯', 3:'✏️', 4:'📝', 5:'📸', 6:'💡', 7:'📌', 8:'📖', 9:'🏛️', 10:'🪝', 11:'✅', 12:'👤'
+};
+
+const sectionIntros = {
+  1: 'Eine neue Besucherin entscheidet in 3 Sekunden ob sie bleibt oder geht — noch bevor sie deine Bio liest. Dieser Check simuliert genau diesen ersten Moment.',
+  2: 'Dein Profil-Filter ist der eine Satz der alles zusammenfasst: für wen du da bist, was du löst, und warum gerade du. Er hilft dir bei jeder Content-Entscheidung.',
+  3: 'Der Profilname ist das einzige Feld auf Instagram das in der Suchfunktion indexiert wird. Wer hier die richtigen Keywords nutzt, wird von Fremden gefunden — ohne einen einzigen Post.',
+  4: 'Die Bio hat ca. 150 Zeichen um zu erklären wer du bist, wem du hilfst und was als nächstes zu tun ist. Hier entscheidet sich ob eine Besucherin folgt oder weiterscrollt.',
+  5: 'Das Profilbild erscheint überall: in der Suche, in Kommentaren, in DMs. Vertrauen entsteht durch Gesicht, Blickkontakt und Ausstrahlung — nicht durch ein Logo.',
+  6: 'Highlights sind deine permanente Visitenkarte für neue Besucherinnen — sie bleiben sichtbar auch wenn Stories längst weg sind. Eine klare Struktur gibt sofort Orientierung.',
+  7: 'Die 3 angepinnten Posts sind dein erster Handschlag. Sie zeigen wer du bist, was du löst und dass du Ergebnisse lieferst — bevor jemand anfängt zu scrollen.',
+  8: 'Stories sind der direkteste Kanal zu deiner Community — ungefiltert, nah, täglich. Wer hier keinen roten Faden hat, verliert Vertrauen schneller als durch schlechten Content.',
+  9: 'Content-Säulen sind deine thematischen Leitplanken. Sie sorgen dafür dass dein Profil nach außen klar wirkt — und du intern immer weißt was du als nächstes postest.',
+  10: 'Eine lebensechte Persona hilft dir beim Schreiben: Du redest nicht mehr ins Leere, sondern zu einem echten Menschen mit echten Gedanken, echtem Alltag und echtem Schmerz.',
+  11: 'Ein Hook entscheidet in 1–2 Sekunden ob jemand stoppt oder weiterschrollt. Diese 95 universellen Templates kannst du sofort auf deine Nische anpassen — in 3 Kategorien: Community, Trust und Sales.',
+  12: 'Deine Schritte — sortiert nach Hebelwirkung. Fang oben an, nicht unten. Jedes To-do hat einen konkreten Grund warum es jetzt die größte Wirkung hat.'
+};
+
+const renderers = {
+  1: renderSection1, 2: renderSection2, 3: renderSection3,
+  4: renderSection4, 5: renderSection5, 6: renderSection6,
+  7: renderSection7, 8: renderSection8, 9: renderSection9, 10: renderWunschkundinProfil,
+  11: renderSection10, 12: renderSection11
+};
+
+// ── Farbpalette ──────────────────────────────────────────
+function renderFarben(data) {
+  if (!data.farben) return;
+  const f = data.farben;
+  const colors = [
+    { label: 'Primärfarbe', hex: f.primaer },
+    { label: 'Akzentfarbe', hex: f.akzent },
+    { label: 'Hintergrund', hex: f.hintergrund }
+  ].filter(c => c.hex);
+  if (!colors.length) return;
+  const swatches = colors.map(c => `
+    <div class="swatch">
+      <div class="swatch-color" style="background:${c.hex}"></div>
+      <div class="swatch-hex">${c.hex.toUpperCase()}</div>
+      <div class="swatch-label">${c.label}</div>
+    </div>`).join('');
+  const vp = f.vibe_passt;
+  const vibePasstColor = (vp === false || vp === 'nein') ? '#FF1744' : (vp === true || vp === 'ja') ? '#00C853' : '#FF6D00';
+  const vibePasstLabel = (vp === false || vp === 'nein') ? '✗ Passt nicht zur Nische' : (vp === true || vp === 'ja') ? '✓ Passt zur Nische' : '◑ Teilweise passend';
+  const fontHtml = f.vibe ? `
+    <div style="margin-top:18px;padding-top:18px;border-top:1px solid var(--lavender-mid)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-light)">Brand-Vibe</div>
+        <span style="font-size:14px;font-weight:700;color:var(--text)">${f.vibe}</span>
+        <span style="font-size:11px;font-weight:700;color:${vibePasstColor};background:${vibePasstColor}18;border-radius:20px;padding:3px 10px">${vibePasstLabel}</span>
+      </div>
+      ${f.vibe_umsetzung ? `<div style="font-size:13px;color:var(--text-light);line-height:1.65;background:rgba(0,0,0,0.04);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:10px 14px">→ ${f.vibe_umsetzung}</div>` : ''}
+    </div>` : '';
+  document.getElementById('farben-section').innerHTML = `
+    <div class="card" style="animation-delay:.15s">
+      <div class="section-header">
+        <div class="section-nr" style="background:${f.primaer||'var(--purple)'}">✦</div>
+        <div class="section-title">Deine Brand-Farben</div>
+      </div>
+      <div style="font-size:13px;color:var(--text-light);line-height:1.65;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--lavender-mid)">Deine Brandfarben bestimmen den ersten visuellen Eindruck — noch bevor jemand deinen Text liest. Konsistente Farben wirken professionell und machen dein Profil sofort wiedererkennbar.</div>
+      <div class="farben-palette">${swatches}</div>
+      ${fontHtml}
+    </div>`;
+}
+
+// ── Report render ─────────────────────────────────────────
+function renderReport(data) {
+  _reportData = data;
+  renderMeta(data);
+  renderEinstieg(data);
+  renderOrientierungswoerter(data);
+  renderFarben(data);
+  renderScoreDashboard(data);
+
+  const accentColors = ['#000000','#FF8F0B','#CFC5B6'];
+  const container = document.getElementById('sections-container');
+  (data.analyse||[]).forEach((item, idx) => {
+    const renderer = renderers[item.nr];
+    if (!renderer) return;
+    const content = renderer(item);
+    if (!content || !content.trim()) return;
+    const hasScore = item.score && item.nr >= 1 && item.nr <= 9;
+    const scoreBadge = hasScore ? `<span class="score-badge ${scoreClass(item.score)}">${item.score}/10</span>` : '';
+    const accent = accentColors[idx % accentColors.length];
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.style.animationDelay = `${idx * 0.07}s`;
+    div.style.borderTop = `4px solid ${accent}`;
+    const icon = sectionIcons[item.nr] || '';
+    const intro = sectionIntros[item.nr] || '';
+    const sectionTitel = (item.nr === 10) ? g('Deine Wunschkundin', 'Dein Wunschkunde') : item.titel;
+    div.innerHTML = `
+      <div class="section-header">
+        <div class="section-nr" style="background:${accent}">${item.nr}</div>
+        <div class="section-title">${icon ? `<span style="margin-right:6px">${icon}</span>` : ''}${sectionTitel}</div>
+        ${scoreBadge}
+      </div>
+      ${intro ? `<div style="font-size:13px;color:var(--text-light);line-height:1.65;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--lavender-mid)">${intro}</div>` : ''}
+      <div>${content}</div>`;
+    container.appendChild(div);
+
+    // Nach Hook-Bibliothek: statischer Hook-Typen-Guide
+    if (item.nr === 11) {
+      const hookGuideDiv = document.createElement('div');
+      hookGuideDiv.className = 'card';
+      hookGuideDiv.style.animationDelay = `${(idx + 0.5) * 0.07}s`;
+      hookGuideDiv.style.borderTop = '4px solid #FF8F0B';
+      hookGuideDiv.innerHTML = `
+        <div class="section-header">
+          <div class="section-nr" style="background:#FF8F0B">🎬</div>
+          <div class="section-title">Hook-Typen im Überblick</div>
+        </div>
+        <div style="font-size:13px;color:var(--text-light);line-height:1.65;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--lavender-mid)">
+          Textliche Hooks kennst du bereits. Aber Reels werden in den ersten 2 Sekunden entschieden — oft bevor der Ton überhaupt läuft. Diese Hook-Typen geben dir konkrete Tools an die Hand.
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px">
+          <div style="background:var(--lavender-mid);border-radius:14px;padding:20px">
+            <div style="font-size:24px;margin-bottom:8px">👁️</div>
+            <div style="font-weight:700;font-size:15px;color:var(--text);margin-bottom:6px">Visueller Hook</div>
+            <div style="font-size:12px;color:var(--text-light);margin-bottom:14px;line-height:1.5">Wirkt bevor jemand den Ton anmacht — auf Mobile entscheidend, weil 85 % der Reels ohne Ton gestartet werden</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="background:white;border-radius:10px;padding:12px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#FF8F0B;margin-bottom:4px">📌 Text-Overlay</div>
+                <div style="font-size:13px;color:var(--text);line-height:1.5">Großer, kontrastreicher Text im ersten Frame — max. 5–7 Wörter, Frage oder starke Aussage</div>
+                <div style="font-size:12px;color:var(--text-light);margin-top:5px;font-style:italic">"37 Likes. 0 neue Follower." ✓</div>
+              </div>
+              <div style="background:white;border-radius:10px;padding:12px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#FF8F0B;margin-bottom:4px">🎬 In-Action-Start</div>
+                <div style="font-size:13px;color:var(--text);line-height:1.5">Die Kamera läuft — du machst schon etwas. Kein Stehen, kein "Hallo, heute zeige ich euch..."</div>
+              </div>
+              <div style="background:white;border-radius:10px;padding:12px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#FF8F0B;margin-bottom:4px">🏆 Ergebnis zuerst</div>
+                <div style="font-size:13px;color:var(--text);line-height:1.5">Zeig das Ergebnis sofort im ersten Frame — Screenshot, Zahl, Vorher/Nachher — dann erst den Weg dorthin</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:var(--lavender-mid);border-radius:14px;padding:20px">
+            <div style="font-size:24px;margin-bottom:8px">🎙️</div>
+            <div style="font-weight:700;font-size:15px;color:var(--text);margin-bottom:6px">Audio Hook</div>
+            <div style="font-size:12px;color:var(--text-light);margin-bottom:14px;line-height:1.5">Die ersten 3 Wörter entscheiden. Kein Warm-up, keine Begrüßung — direkt rein in den Inhalt</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="background:white;border-radius:10px;padding:12px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#FF8F0B;margin-bottom:4px">🎯 Direkte Ansprache</div>
+                <div style="font-size:13px;color:var(--text);line-height:1.5">"Du" statt "Man" — sie fühlt sich sofort persönlich angesprochen statt allgemein informiert</div>
+                <div style="font-size:12px;color:var(--text-light);margin-top:5px;font-style:italic">"Du postest täglich und niemand schaut zu" ✓</div>
+              </div>
+              <div style="background:white;border-radius:10px;padding:12px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#FF8F0B;margin-bottom:4px">⚡ Starker Einstieg</div>
+                <div style="font-size:13px;color:var(--text);line-height:1.5">Direkt mit der stärksten Aussage starten — keine Ankündigung was kommt, keine Einleitung</div>
+                <div style="font-size:12px;color:var(--text-light);margin-top:5px;font-style:italic">"270 Follower in 3 Wochen. Kein Zufall." ✓</div>
+              </div>
+              <div style="background:white;border-radius:10px;padding:12px">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#FF8F0B;margin-bottom:4px">🔄 Offener Loop</div>
+                <div style="font-size:13px;color:var(--text);line-height:1.5">Unvollständige Aussage die das Gehirn zwingt weiterzuhören — die Auflösung kommt erst am Ende</div>
+                <div style="font-size:12px;color:var(--text-light);margin-top:5px;font-style:italic">"Was mein Reel auf 130k Views gebracht hat..." ✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--lavender-mid);border-radius:12px;padding:16px 20px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);margin-bottom:10px">💡 Tipps & Tricks</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:13px;color:var(--text);line-height:1.5;padding:8px 12px;background:white;border-radius:8px;border-left:3px solid #FF8F0B"><strong>Kombination wirkt am stärksten:</strong> Text-Overlay im ersten Frame + direkte Audio-Ansprache in den ersten 3 Wörtern = maximale Stop-Rate</div>
+            <div style="font-size:13px;color:var(--text);line-height:1.5;padding:8px 12px;background:white;border-radius:8px;border-left:3px solid #FF8F0B"><strong>Trending Sounds:</strong> Erhöhen die organische Reichweite durch den Algorithmus — aber nur wenn der Sound zum Inhalt passt, nicht erzwungen wirkt</div>
+            <div style="font-size:13px;color:var(--text);line-height:1.5;padding:8px 12px;background:white;border-radius:8px;border-left:3px solid #FF8F0B"><strong>Completion Rate:</strong> Je länger jemand schaut, desto mehr pusht der Algorithmus. Ein starker Hook am Anfang + eine Auflösung am Ende hält Menschen bis zum Schluss</div>
+          </div>
+        </div>`;
+      container.appendChild(hookGuideDiv);
+
+      container.insertAdjacentHTML('beforeend', renderQuickWinSection());
+    }
+  });
+}
+
+// Init
+(async function() {
+  const hash = window.location.hash.slice(1);
+  if (!hash) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error').style.display = 'flex';
+    return;
+  }
+  const data = await decodeData(hash);
+  if (!data) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error').style.display = 'flex';
+    return;
+  }
+  renderReport(data);
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('report').style.display = 'block';
+})();
+</script>
+</body>
+</html>
